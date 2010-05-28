@@ -6,7 +6,7 @@
     <child>
       <object class="GtkTable" id="table2">
         <property name="visible">True</property>
-        <property name="n_rows">5</property>
+        <property name="n_rows">6</property>
         <property name="n_columns">2</property>
         <child>
           <object class="GtkLabel" id="lRequests">
@@ -31,42 +31,6 @@
           </packing>
         </child>
         <child>
-          <object class="GtkLabel" id="lMBSuccess">
-            <property name="visible">True</property>
-            <property name="xpad">5</property>
-            <property name="label" translatable="yes">Successful calls:</property>
-          </object>
-          <packing>
-            <property name="top_attach">2</property>
-            <property name="bottom_attach">3</property>
-            <property name="x_options">GTK_EXPAND</property>
-          </packing>
-        </child>
-        <child>
-          <object class="GtkLabel" id="lMBFailed">
-            <property name="visible">True</property>
-            <property name="xpad">5</property>
-            <property name="label" translatable="yes">Failed calls:</property>
-          </object>
-          <packing>
-            <property name="top_attach">3</property>
-            <property name="bottom_attach">4</property>
-            <property name="x_options">GTK_EXPAND</property>
-          </packing>
-        </child>
-        <child>
-          <object class="GtkLabel" id="lDBEntries">
-            <property name="visible">True</property>
-            <property name="xpad">5</property>
-            <property name="label" translatable="yes">DB Entries:</property>
-          </object>
-          <packing>
-            <property name="top_attach">4</property>
-            <property name="bottom_attach">5</property>
-            <property name="x_options">GTK_EXPAND</property>
-          </packing>
-        </child>
-        <child>
           <object class="GtkLabel" id="lRequestsData">
             <property name="visible">True</property>
             <property name="xpad">1</property>
@@ -79,9 +43,55 @@
           </packing>
         </child>
         <child>
+          <object class="GtkLabel" id="lHitsData">
+            <property name="visible">True</property>
+          </object>
+          <packing>
+            <property name="left_attach">1</property>
+            <property name="right_attach">2</property>
+            <property name="top_attach">1</property>
+            <property name="bottom_attach">2</property>
+          </packing>
+        </child>
+        <child>
+          <object class="GtkLabel" id="lDBEntries">
+            <property name="visible">True</property>
+            <property name="xpad">5</property>
+            <property name="label" translatable="yes">DB Entries:</property>
+          </object>
+          <packing>
+            <property name="top_attach">5</property>
+            <property name="bottom_attach">6</property>
+            <property name="x_options">GTK_EXPAND</property>
+          </packing>
+        </child>
+        <child>
           <object class="GtkLabel" id="lDBEntriesData">
             <property name="visible">True</property>
             <property name="width_chars">8</property>
+          </object>
+          <packing>
+            <property name="left_attach">1</property>
+            <property name="right_attach">2</property>
+            <property name="top_attach">5</property>
+            <property name="bottom_attach">6</property>
+          </packing>
+        </child>
+        <child>
+          <object class="GtkLabel" id="lMBFailed">
+            <property name="visible">True</property>
+            <property name="xpad">5</property>
+            <property name="label" translatable="yes">Failed calls:</property>
+          </object>
+          <packing>
+            <property name="top_attach">4</property>
+            <property name="bottom_attach">5</property>
+            <property name="x_options">GTK_EXPAND</property>
+          </packing>
+        </child>
+        <child>
+          <object class="GtkLabel" id="lMBFailedData">
+            <property name="visible">True</property>
           </object>
           <packing>
             <property name="left_attach">1</property>
@@ -91,7 +101,19 @@
           </packing>
         </child>
         <child>
-          <object class="GtkLabel" id="lMBFailedData">
+          <object class="GtkLabel" id="lMBSuccess">
+            <property name="visible">True</property>
+            <property name="xpad">5</property>
+            <property name="label" translatable="yes">Successful calls:</property>
+          </object>
+          <packing>
+            <property name="top_attach">3</property>
+            <property name="bottom_attach">4</property>
+            <property name="x_options">GTK_EXPAND</property>
+          </packing>
+        </child>
+        <child>
+          <object class="GtkLabel" id="lMBSuccessData">
             <property name="visible">True</property>
           </object>
           <packing>
@@ -102,7 +124,19 @@
           </packing>
         </child>
         <child>
-          <object class="GtkLabel" id="lMBSuccessData">
+          <object class="GtkLabel" id="lMisses">
+            <property name="visible">True</property>
+            <property name="xpad">5</property>
+            <property name="label" translatable="yes">Misses:</property>
+          </object>
+          <packing>
+            <property name="top_attach">2</property>
+            <property name="bottom_attach">3</property>
+            <property name="x_options">GTK_EXPAND</property>
+          </packing>
+        </child>
+        <child>
+          <object class="GtkLabel" id="lMissesData">
             <property name="visible">True</property>
           </object>
           <packing>
@@ -110,17 +144,6 @@
             <property name="right_attach">2</property>
             <property name="top_attach">2</property>
             <property name="bottom_attach">3</property>
-          </packing>
-        </child>
-        <child>
-          <object class="GtkLabel" id="lHitsData">
-            <property name="visible">True</property>
-          </object>
-          <packing>
-            <property name="left_attach">1</property>
-            <property name="right_attach">2</property>
-            <property name="top_attach">1</property>
-            <property name="bottom_attach">2</property>
           </packing>
         </child>
       </object>

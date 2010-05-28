@@ -18,6 +18,7 @@ clean:
 install:
 	@install -d $(DESTDIR)$(BASE)
 
+	## COPY .glade file
 	
 	
 buildsrc:

@@ -1,4 +1,14 @@
 """
+    UI Agent
+    
+    Messages Emitted:
+    - "tick"
+    - "__quit__"
+    
+    Messages Processed:
+    - 
+    
+
     @author: jldupont
     @date: May 28, 2010
 """
@@ -14,6 +24,8 @@ import app.system.mswitch as mswitch
 
 path=os.path.dirname(__file__)
 glade_file=path+"/ui.glade"
+        
+TIME_BASE=250  ##milliseconds
         
 class UiWindow(gobject.GObject): #@UndefinedVariable
     
@@ -31,6 +43,7 @@ class UiWindow(gobject.GObject): #@UndefinedVariable
         self.mbsuccessful=self.builder.get_object("lMBSuccessfulData")
         self.mbfailed=self.builder.get_object("lMBFailedData")
         self.hits=self.builder.get_object("lHitsData")
+        self.misses=self.builder.get_object("lMissesData")
         self.dbentries=self.builder.get_object("lDBEntriesData")
 
         self.window.connect("destroy-event", self.on_destroy)
@@ -46,6 +59,8 @@ class UiWindow(gobject.GObject): #@UndefinedVariable
         """
         Performs message dispatch
         """
+        mswitch.publish("__main__", "tick")
+        
         while True:
             try:     
                 envelope=self.iq.get(False)
@@ -58,6 +73,6 @@ class UiWindow(gobject.GObject): #@UndefinedVariable
 
         
 ui=UiWindow(glade_file)
-gobject.timeout_add(250, ui.tick)
+gobject.timeout_add(TIME_BASE, ui.tick)
 gtk.main()
 

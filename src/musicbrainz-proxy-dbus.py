@@ -7,7 +7,6 @@
 """
 import os
 import sys
-import gtk
 
 ## For development environment
 ppkg=os.path.abspath( os.getcwd() +"/app")
@@ -26,15 +25,5 @@ DBusGMainLoop(set_as_default=True)
 
 from app.system import mswitch
 from app.agents import ui
-
-
-pcount=0
-def idle():
-    global pcount
-    mswitch.publish("__idle__", "%poll", pcount)
-    pcount=pcount+1
-    return True
-
-gobject.timeout_add(250, idle)
-gtk.main()
+from app.agents import adbus
 
