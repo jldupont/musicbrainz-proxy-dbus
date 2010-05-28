@@ -1,0 +1,9 @@
+#!/bin/bash
+#
+# @author: Jean-Lou Dupont
+# http://www.systemical.com/
+
+cd /usr/lib/musicbrainz-proxy-dbus
+
+export DISPLAY=:0.0
+python musicbrainz-proxy-dbus.py

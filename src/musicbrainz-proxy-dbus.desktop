@@ -1,0 +1,7 @@
+[Desktop Entry]
+Version=1.0
+Type=Application
+Name=Proxy service over DBus for Musicbrainz webservice
+Comment=See http://www.systemical.com/
+Exec=musicbrainz-proxy-dbus
+Icon=musicbrainz-proxy-dbus
