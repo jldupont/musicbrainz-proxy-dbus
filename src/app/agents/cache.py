@@ -41,6 +41,9 @@ class Track(object):
         value=self.__dict__.get(key, None)
         return value
     
+    def __setattr__(self, key, value):
+        self.__dict__[key]=value
+        
     
 
 class Agent(AgentThreadedBase):
@@ -58,8 +61,7 @@ class Agent(AgentThreadedBase):
                             created integer,
                             updated integer,
                             track_name text,  track_mbid text,
-                            artist_name text, artist_mbid text,
-                            album_name text,  album_mbid text)
+                            artist_name text, artist_mbid text)
                         """)
         
     ## ========================================================= HANDLERS
@@ -72,15 +74,52 @@ class Agent(AgentThreadedBase):
         track=self._findTrack(artist_name, track_name)
         self.pub("track", ref, track)
           
+          
     def h_track(self, ref, track):
         """
         Handler for the 'track' message
         
         Updates the cache, if necessary
         """
+        
+        ## If no mbid is present, don't bother updating the cache
+        track_mbid=track.track_mbid
+        if track_mbid is None:
+            return
             
+        self._updateOrInsert(track)
+        
         
     ## ========================================================= PRIVATE
+    def _updateOrInsert(self, track):
+        """
+        Updates the track OR inserts it
+        """
+        new=False
+        now=time.time()        
+
+        self.c.execute("""UPDATE tracks SET 
+                        track_mbid=?, artist_mbid=?,
+                        updated=? WHERE artist_name=? AND track_name=?""", 
+                        (track.track_mbid, track.artist_mbid,
+                         now,
+                        track.artist_name, track.track_name,
+                        ))
+        
+        
+        if self.c.rowcount != 1:
+            self.c.execute("""INSERT INTO tracks (created, updated,  
+                            track_name, track_mbid,
+                            artist_name, artist_mbid,
+                            ) VALUES (?, ?, ?, ?, ?, ?)""", 
+                            (now, 0, track.track_name, track.track_mbid,
+                            track.artist_name, track.artist_mbid) )
+            new=True
+            
+        self.conn.commit()
+        return new
+        
+        
         
     def _findTrack(self, artist_name, track_name):
         """
