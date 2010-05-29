@@ -78,7 +78,7 @@ class Agent(AgentThreadedBase):
         uuid=self._queryTrack(track)
         track.track_mbid=uuid
         
-        self.pub("track", ref, track)
+        self.pub("track", ref, track, "mb")
         
         
 

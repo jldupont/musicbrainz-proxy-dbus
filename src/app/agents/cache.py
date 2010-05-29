@@ -72,10 +72,10 @@ class Agent(AgentThreadedBase):
         """
         print "Cache.h_qtrack: artist(%s) track(%s)" % (artist_name, track_name)
         track=self._findTrack(artist_name, track_name)
-        self.pub("track", ref, track)
+        self.pub("track", ref, track, "cache")
           
           
-    def h_track(self, ref, track):
+    def h_track(self, _ref, track):
         """
         Handler for the 'track' message
         
@@ -87,7 +87,7 @@ class Agent(AgentThreadedBase):
         if track_mbid is None:
             return
             
-        self._updateOrInsert(track)
+        _new=self._updateOrInsert(track)
         
         
     ## ========================================================= PRIVATE
