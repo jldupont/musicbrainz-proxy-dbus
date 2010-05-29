@@ -26,6 +26,7 @@ path=os.path.dirname(__file__)
 glade_file=path+"/ui.glade"
         
 TIME_BASE=250  ##milliseconds
+TICKS_SECOND=1000/TIME_BASE
         
 class UiWindow(gobject.GObject): #@UndefinedVariable
     
@@ -34,12 +35,14 @@ class UiWindow(gobject.GObject): #@UndefinedVariable
 
         self.iq=Queue()
         mswitch.subscribe(self.iq)
+        self.tick_count=0
 
         self.builder = gtk.Builder()
         self.builder.add_from_file(glade_file)
         self.window = self.builder.get_object("ui_window")
 
         self.reqin=self.builder.get_object("lRequestsData")
+        self.reqdrop=self.builder.get_object("lRequestsDroppedData")
         self.mbsuccessful=self.builder.get_object("lMBSuccessfulData")
         self.mbfailed=self.builder.get_object("lMBFailedData")
         self.hits=self.builder.get_object("lHitsData")
@@ -59,7 +62,9 @@ class UiWindow(gobject.GObject): #@UndefinedVariable
         """
         Performs message dispatch
         """
-        mswitch.publish("__main__", "tick")
+        tick_second = (self.tick_count % TICKS_SECOND) == 0 
+        
+        mswitch.publish("__main__", "tick", TICKS_SECOND, tick_second)
         
         while True:
             try:     

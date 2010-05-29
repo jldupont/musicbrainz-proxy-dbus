@@ -6,7 +6,7 @@
     
     Messages Processed:
     - "track?"
-    - "mbtrack"
+    - "track"
     
     @author: jldupont
     @date: May 28, 2010
@@ -62,16 +62,27 @@ class Agent(AgentThreadedBase):
                             album_name text,  album_mbid text)
                         """)
         
+    ## ========================================================= HANDLERS
+        
     def hq_track(self, ref, artist_name, track_name):
         """
         Question: 'track?'
         """
         print "Cache.h_qtrack: artist(%s) track(%s)" % (artist_name, track_name)
-        track=self.findTrack(artist_name, track_name)
+        track=self._findTrack(artist_name, track_name)
         self.pub("track", ref, track)
+          
+    def h_track(self, ref, track):
+        """
+        Handler for the 'track' message
+        
+        Updates the cache, if necessary
+        """
             
         
-    def findTrack(self, artist_name, track_name):
+    ## ========================================================= PRIVATE
+        
+    def _findTrack(self, artist_name, track_name):
         """
         Locates a 'track'
         """
