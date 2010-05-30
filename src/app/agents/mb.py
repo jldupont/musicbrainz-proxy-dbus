@@ -42,7 +42,7 @@ class MBQuery(object):
     
         
 
-class Agent(AgentThreadedBase):
+class MBAgent(AgentThreadedBase):
 
     QUEUE_SIZE=512
     
@@ -66,6 +66,8 @@ class Agent(AgentThreadedBase):
         if not tick_second:
             return
         
+        print "mb.h_tick"
+        
         try:
             (ref, track)=self.qtodo.get(block=False)
         except Empty:
@@ -77,27 +79,30 @@ class Agent(AgentThreadedBase):
         
         track=self._queryTrack(track)
         if track is not None:
+            print ">>> mb result: ", track
             self.pub("track", "mb", ref, track)
         
         
 
-    def h_track(self, ref, track):
+    def h_track(self, _source, ref, track):
         """
         Handler for the 'track' message
     
         @param ref: opaque reference
         @param track: track details object
         """
+        print "mb.h_track, source, ref, track", _source, ref, track
         
         ## if the track message already contains
         ##  an mbid id, then no use making a call to Musicbrainz:
         ##  it is the 'cache agent' that's probably emitting this message 
         track_mbid=track["track_mbid"]
-        if len(track_mbid) != 0:
+        if track_mbid is not None:
             return
         
         try:
             self.qtodo.put((ref, track), block=False)
+            print "mb.h_track: adding to TODO"
         except Full:
             self.pub("mb_queue_full", (ref, track))
         
@@ -129,6 +134,8 @@ class Agent(AgentThreadedBase):
             self.pub("mb_error", e)
             return None
         
+        print "mb._queryTrack: track_mbid: ", tuuid
+        
         track["track_mbid"]=tuuid
         track["artist_mbid"]=auuid
 
@@ -144,7 +151,7 @@ class Agent(AgentThreadedBase):
 
 if __name__ != "__main__":
    
-    _=Agent()
+    _=MBAgent()
     _.start()
 
 

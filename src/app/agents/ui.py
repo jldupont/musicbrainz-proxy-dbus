@@ -84,13 +84,14 @@ class UiWindow(gobject.GObject): #@UndefinedVariable
         self.cRequestsDropped += 1
         self.reqdrop.set_text(str(self.cRequestsDropped)) 
 
-    def h_track(self, source, _ref, _track):
+    def h_track(self, source, _ref, track):
         """
         For computing the 'hits' and 'misses'
         """
         if source == "cache":
-            self.cHits += 1
-            self.hits.set_text(str(self.cHits))
+            if track.track_mbid is not None:
+                self.cHits += 1
+                self.hits.set_text(str(self.cHits))
         else:
             self.cMisses += 1
             self.misses.set_text(str(self.cMisses))
@@ -107,7 +108,11 @@ class UiWindow(gobject.GObject): #@UndefinedVariable
         """
         Performs message dispatch
         """
+        
         tick_second = (self.tick_count % TICKS_SECOND) == 0 
+        self.tick_count += 1
+        
+        print "tick! ", tick_second
         
         mswitch.publish("__main__", "tick", TICKS_SECOND, tick_second)
         

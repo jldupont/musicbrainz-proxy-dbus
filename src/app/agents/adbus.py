@@ -30,12 +30,12 @@ class SignalRx(dbus.service.Object):
         
         dbus.Bus().add_signal_receiver(self.sQTrack,
                                        signal_name="qTrack",
-                                       dbus_interface="com.jldupont.musicbrainz-proxy",
+                                       dbus_interface="com.jldupont.musicbrainz.proxy",
                                        bus_name=None,
                                        path="/Tracks"
                                        )            
 
-    @dbus.service.signal(dbus_interface="com.jldupont.musicbrainz-proxy", signature="ssa{sv}")
+    @dbus.service.signal(dbus_interface="com.jldupont.musicbrainz.proxy", signature="ssa{sv}")
     def Track(self, source, ref, dic):
         pass
 
@@ -68,6 +68,13 @@ class DbusAgent(AgentThreadedBase):
 
         self.srx=SignalRx(self)
         
+    def hq_test_track(self, ref, artist_name, track_name):
+        """
+        For testing purpose
+        """
+        self.pub("track?", ref, artist_name, track_name)
+        
+        
     def h_track(self, source, ref, track):
         """
         Handler for the 'track' message
@@ -82,7 +89,14 @@ class DbusAgent(AgentThreadedBase):
         details["mb_artist_name"]= str( track["mb_artist_name"] )
         details["mb_track_name"]=  str( track["mb_track_name"] )
         
-        self.srx.Track(source, ref, details)
+        if track.artist_mbid is None:
+            return
+        
+        print "dbus.h_track: ", source, ref, track
+        
+        ## Only send a response if we have a meaningful track_mbid
+        if len(track.artist_mbid) > 1:
+            self.srx.Track(source, ref, details)
 
 _=DbusAgent()
 _.start()

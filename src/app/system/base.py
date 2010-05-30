@@ -42,7 +42,10 @@ def mdispatch(obj, obj_orig, envelope):
         if handler is not None:
             handler(mtype, msg, *pargs, **kargs)
     else:
-        handler(msg, *pargs, **kargs)
+        try:
+            handler(msg, *pargs, **kargs)
+        except TypeError, e:
+            raise RuntimeError("Invalid handler for mtype(%s) in obj(%s): %s" % (mtype, str(obj), e))
 
     if handler is None:
         if debug:
