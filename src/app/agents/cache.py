@@ -16,15 +16,14 @@ import sqlite3
 import time
 
 from app.system.base import AgentThreadedBase
-from app.system import mswitch
 
 __all__=[]
+
 
 class Track(object):
     FIELDS=["id", "created", "updated", 
             "track_name",  "track_mbid",
-            "artist_name", "artist_mbid",
-            "album_name",  "album_mbid"]
+            "artist_name", "artist_mbid"]
     
     def __init__(self, track_tuple=None):
         
@@ -37,7 +36,13 @@ class Track(object):
             setattr(self, key, el)
             index += 1
             
+    def __getattribute(self, key):
+        #print "track.__getattribute__: key: %s" % key
+        value=self.__dict__.get(key, None)
+        return value       
+            
     def __getattr__(self, key):
+        #print "track.__getattr__: key: %s" % key
         value=self.__dict__.get(key, None)
         return value
     
@@ -72,7 +77,7 @@ class Agent(AgentThreadedBase):
         """
         print "Cache.h_qtrack: artist(%s) track(%s)" % (artist_name, track_name)
         track=self._findTrack(artist_name, track_name)
-        self.pub("track", ref, track, "cache")
+        self.pub("track", "cache", ref, track)
           
           
     def h_track(self, _ref, track):
@@ -83,11 +88,27 @@ class Agent(AgentThreadedBase):
         """
         
         ## If no mbid is present, don't bother updating the cache
+        ##  because the mbid is the most important piece of it all
         track_mbid=track.track_mbid
         if track_mbid is None:
             return
             
         _new=self._updateOrInsert(track)
+        
+        ## Insert/Update a record based on the answer provided
+        ##  by Musicbrainz: this way, we have more ways to "hit"
+        ##  a potential track target in the cache
+        mb_artist_name=track["mb_artist_name"]
+        mb_track_name=track["mb_track_name"]
+        
+        if mb_artist_name is not None:
+            if mb_track_name is not None:
+                details=(0,0,0,  ## fillout anyhow by update/insert method
+                         mb_track_name,  track["track_mbid"],
+                         mb_artist_name, track["artist_mbid"]
+                         )
+                mb_track=Track(details)
+                self._updateOrInsert(mb_track)
         
         
     ## ========================================================= PRIVATE
@@ -144,4 +165,10 @@ if __name__=="__main__":
     print t.artist_name
     t.track_name="track name!"
     print t.track_name
+    
+    t.mb={}
+    print t.mb
+    t.mb.artist_name="mb.artist_name"
+    print t.mb.artist_name
+    
     

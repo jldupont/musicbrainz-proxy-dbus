@@ -6,8 +6,16 @@
     - "__quit__"
     
     Messages Processed:
-    - 
+    - "track?"
+    - "track"
+    - "mb_queue_full"
+    - "mb_error"
     
+    Requests In      --> track?
+    Requests Dropped --> mb_queue_full
+    Hits             --> track from source 'cache'
+    Misses           --> track from source 'mb'
+    Failed           --> mb_error
 
     @author: jldupont
     @date: May 28, 2010
@@ -43,20 +51,57 @@ class UiWindow(gobject.GObject): #@UndefinedVariable
 
         self.reqin=self.builder.get_object("lRequestsData")
         self.reqdrop=self.builder.get_object("lRequestsDroppedData")
-        self.mbsuccessful=self.builder.get_object("lMBSuccessfulData")
         self.mbfailed=self.builder.get_object("lMBFailedData")
         self.hits=self.builder.get_object("lHitsData")
         self.misses=self.builder.get_object("lMissesData")
-        self.dbentries=self.builder.get_object("lDBEntriesData")
 
         self.window.connect("destroy-event", self.on_destroy)
         self.window.connect("destroy",       self.on_destroy)
         self.window.present()
         
+        self.cRequestsIn = 0
+        self.cRequestsDropped = 0
+        self.cHits = 0
+        self.cMisses = 0
+        self.cFailed = 0
+        
     def on_destroy(self, *_):
         mswitch.publish("__ui__", "__quit__")
         gtk.main_quit()
 
+
+    def hq_track(self, *_):
+        """
+        For computing the 'requests in' counter
+        """
+        self.cRequestsIn += 1
+        self.reqin.set_text(str(self.cRequestsIn))
+
+    def h_mb_queue_full(self, *_):
+        """
+        For computing the 'requests dropped' counter
+        """
+        self.cRequestsDropped += 1
+        self.reqdrop.set_text(str(self.cRequestsDropped)) 
+
+    def h_track(self, source, _ref, _track):
+        """
+        For computing the 'hits' and 'misses'
+        """
+        if source == "cache":
+            self.cHits += 1
+            self.hits.set_text(str(self.cHits))
+        else:
+            self.cMisses += 1
+            self.misses.set_text(str(self.cMisses))
+            
+
+    def h_mb_error(self, *_):
+        """
+        For computing 'failed' counter
+        """
+        self.cFailed += 1
+        self.mbfailed.set_text(str(self.cFailed))
 
     def tick(self, *_):
         """

@@ -35,8 +35,8 @@ class SignalRx(dbus.service.Object):
                                        path="/Tracks"
                                        )            
 
-    @dbus.service.signal(dbus_interface="com.jldupont.musicbrainz-proxy", signature="a{sv}")
-    def Track(self, dic):
+    @dbus.service.signal(dbus_interface="com.jldupont.musicbrainz-proxy", signature="ssa{sv}")
+    def Track(self, source, ref, dic):
         pass
 
 
@@ -68,9 +68,21 @@ class DbusAgent(AgentThreadedBase):
 
         self.srx=SignalRx(self)
         
-    def h_shutdown(self):
-        print "ADBus - shutdown"
-
+    def h_track(self, source, ref, track):
+        """
+        Handler for the 'track' message
+        
+        Send back a message on DBus
+        """
+        details={}
+        details["artist_name"]=    str( track.artist_name )
+        details["track_name"]=     str( track.track_name )
+        details["artist_mbid"]=    str( track.artist_mbid )
+        details["track_mbid"]=     str( track.track_mbid )
+        details["mb_artist_name"]= str( track["mb_artist_name"] )
+        details["mb_track_name"]=  str( track["mb_track_name"] )
+        
+        self.srx.Track(source, ref, details)
 
 _=DbusAgent()
 _.start()

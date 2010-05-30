@@ -75,10 +75,9 @@ class Agent(AgentThreadedBase):
         if track is None:
             return
         
-        uuid=self._queryTrack(track)
-        track.track_mbid=uuid
-        
-        self.pub("track", ref, track, "mb")
+        track=self._queryTrack(track)
+        if track is not None:
+            self.pub("track", "mb", ref, track)
         
         
 
@@ -120,12 +119,25 @@ class Agent(AgentThreadedBase):
         
         try:
             result=results[0]
-            uuid=u.extractUuid(result.track.id)
+            tuuid=u.extractUuid(result.track.id)
+            auuid=u.extractUuid(result.track.artist.id)
+            artist=result.track.artist.name
+            title=result.track.title
+        except IndexError,_e:
+            return None
         except Exception,e:
             self.pub("mb_error", e)
             return None
         
-        return uuid
+        track["track_mbid"]=tuuid
+        track["artist_mbid"]=auuid
+
+        ## Add these details to the original 'track' object:
+        ##  these should help populate the cache with useful information                
+        track["mb_artist_name"]=artist
+        track["mb_track_name"]=title
+        
+        return track
     
         
         
