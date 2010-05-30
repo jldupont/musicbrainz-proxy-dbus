@@ -6,7 +6,7 @@
 """
 
 from threading import Thread
-from Queue import Queue
+from Queue import Queue, Empty
 
 __all__=["publish", "subscribe"]
 
@@ -30,7 +30,11 @@ class BasicSwitch(Thread):
         Main loop
         """
         while True:
-            envelope=self.iq.get()
+            try:
+                envelope=self.iq.get(block=True, timeout=1)
+            except Empty, _e:
+                continue
+            
             mtype, payload=envelope
             
             if mtype=="__sub__":
@@ -58,6 +62,7 @@ class BasicSwitch(Thread):
         """
         #print "do_pub: mtype: %s  payload: %s" % (mtype, payload)
         for q in self.clients:
+            #print "switch.do_pub: q, mtype: ", q, mtype
             q.put((mtype, payload))
     
 

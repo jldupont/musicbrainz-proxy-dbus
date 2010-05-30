@@ -112,7 +112,7 @@ class UiWindow(gobject.GObject): #@UndefinedVariable
         tick_second = (self.tick_count % TICKS_SECOND) == 0 
         self.tick_count += 1
         
-        print "tick! ", tick_second
+        #print "tick! ", tick_second
         
         mswitch.publish("__main__", "tick", TICKS_SECOND, tick_second)
         
