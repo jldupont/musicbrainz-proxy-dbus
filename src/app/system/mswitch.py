@@ -30,11 +30,7 @@ class BasicSwitch(Thread):
         Main loop
         """
         while True:
-            try:
-                envelope=self.iq.get(block=True, timeout=1)
-            except Empty, _e:
-                continue
-            
+            envelope=self.iq.get(block=True)
             mtype, payload=envelope
             
             if mtype=="__sub__":

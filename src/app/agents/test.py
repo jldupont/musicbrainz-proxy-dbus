@@ -10,7 +10,7 @@ __all__=[]
 
 class TestAgent(AgentThreadedBase):
     
-    LIMIT=5
+    LIMIT=2
     
     def __init__(self):
         AgentThreadedBase.__init__(self)
@@ -24,7 +24,7 @@ class TestAgent(AgentThreadedBase):
             return
         
         print "test!"
-        self.pub("test_track?", "test", "Beyonce", "Baby Boy")
+        self.pub("track?", "test", "Beyonce", "Baby Boy")
         
 
 

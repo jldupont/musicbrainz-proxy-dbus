@@ -13,15 +13,14 @@ ppkg=os.path.abspath( os.getcwd() +"/app")
 if os.path.exists(ppkg):
     sys.path.insert(0, ppkg)
 
-
+import gobject
 import dbus.glib
-import gobject              #@UnresolvedImport
+from dbus.mainloop.glib import DBusGMainLoop
 
 gobject.threads_init()
 dbus.glib.init_threads()
-
-from dbus.mainloop.glib import DBusGMainLoop
 DBusGMainLoop(set_as_default=True)
+
 
 from app.system import mswitch
 from app.agents import adbus
@@ -30,3 +29,6 @@ from app.agents import mb
 from app.agents import test
 
 from app.agents import ui
+
+import gtk
+gtk.main()

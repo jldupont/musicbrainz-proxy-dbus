@@ -6,7 +6,7 @@
 """
 
 from threading import Thread
-from Queue import Queue, Empty
+from Queue import Queue
 import uuid
 
 import mswitch
@@ -75,11 +75,7 @@ class AgentThreadedBase(Thread):
         mswitch.subscribe(self.iq)
         
         while True:
-            try:
-                envelope=self.iq.get(block=True, timeout=1)
-            except Empty, _e:
-                continue
-
+            envelope=self.iq.get(block=True)
             quit=mdispatch(self, self.id, envelope)
             if quit:
                 shutdown_handler=getattr(self, "h_shutdown", None)

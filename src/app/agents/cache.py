@@ -11,6 +11,7 @@
     @author: jldupont
     @date: May 28, 2010
 """
+import copy
 import os
 import sqlite3
 import time
@@ -20,41 +21,21 @@ from app.system.base import AgentThreadedBase
 __all__=[]
 
 
-class Track(object):
-    FIELDS=["id", "created", "updated", 
-            "track_name",  "track_mbid",
-            "artist_name", "artist_mbid"]
-    
-    def __init__(self, track_tuple=None):
-        
-        if track_tuple is None:
-            return
-        
-        index=0
-        for el in track_tuple:
-            key=self.FIELDS[index]
-            setattr(self, key, el)
-            index += 1
-            
-    def __getattribute(self, key):
-        #print "track.__getattribute__: key: %s" % key
-        value=self.__dict__.get(key, None)
-        return value       
-            
-    def __getattr__(self, key):
-        #print "track.__getattr__: key: %s" % key
-        value=self.__dict__.get(key, None)
-        return value
-    
-    def __setattr__(self, key, value):
-        self.__dict__[key]=value
-        
-    def __setitem__(self, key, value):
-        self.__dict__[key]=value
-        
-    def __getitem__(self, key):
-        return self.__dict__.get(key, None)
-    
+FIELDS=["id", "created", "updated", 
+        "track_name",  "track_mbid",
+        "artist_name", "artist_mbid"]
+
+def makeTrackDict(track_tuple):
+    if track_tuple is None:
+        return {}
+    dic={}
+    index=0
+    for el in track_tuple:
+        key=FIELDS[index]
+        dic[key]=el
+        index += 1
+    return dic
+
 
 class CacheAgent(AgentThreadedBase):
     
@@ -64,7 +45,7 @@ class CacheAgent(AgentThreadedBase):
         AgentThreadedBase.__init__(self)
 
         self.path=os.path.expanduser(self.DBPATH)
-        self.conn=sqlite3.connect(self.path)
+        self.conn=sqlite3.connect(self.path, check_same_thread=False)
         self.c = self.conn.cursor()
         
         self.c.execute("""create table if not exists tracks (id integer primary key,
@@ -80,10 +61,12 @@ class CacheAgent(AgentThreadedBase):
         """
         Question: 'track?'
         """
-        #print "Cache.h_qtrack: artist(%s) track(%s)" % (artist_name, track_name)
+        print "Cache.h_qtrack: artist(%s) track(%s)" % (artist_name, track_name)
         track=self._findTrack(artist_name, track_name)
         self.pub("track", "cache", ref, track)
-          
+
+    #def h_tick(self, *_):
+    #    print "cache.h_tick"
           
     def h_track(self, _source, _ref, track):
         """
@@ -95,7 +78,7 @@ class CacheAgent(AgentThreadedBase):
         
         ## If no mbid is present, don't bother updating the cache
         ##  because the mbid is the most important piece of it all
-        track_mbid=track.track_mbid
+        track_mbid=track.get("track_mbid", None)
         if track_mbid is None:
             return
             
@@ -113,7 +96,8 @@ class CacheAgent(AgentThreadedBase):
                          mb_track_name,  track["track_mbid"],
                          mb_artist_name, track["artist_mbid"]
                          )
-                mb_track=Track(details)
+                
+                mb_track=makeTrackDict(details)
                 self._updateOrInsert(mb_track)
         
         
@@ -128,19 +112,19 @@ class CacheAgent(AgentThreadedBase):
         self.c.execute("""UPDATE tracks SET 
                         track_mbid=?, artist_mbid=?,
                         updated=? WHERE artist_name=? AND track_name=?""", 
-                        (track.track_mbid, track.artist_mbid,
+                        (track["track_mbid"], track["artist_mbid"],
                          now,
-                        track.artist_name, track.track_name,
+                        track["artist_name"], track["track_name"],
                         ))
         
         
         if self.c.rowcount != 1:
             self.c.execute("""INSERT INTO tracks (created, updated,  
                             track_name, track_mbid,
-                            artist_name, artist_mbid,
+                            artist_name, artist_mbid
                             ) VALUES (?, ?, ?, ?, ?, ?)""", 
-                            (now, 0, track.track_name, track.track_mbid,
-                            track.artist_name, track.artist_mbid) )
+                            (now, 0, track["track_name"], track["track_mbid"],
+                            track["artist_name"], track["artist_mbid"]) )
             new=True
             
         self.conn.commit()
@@ -154,15 +138,15 @@ class CacheAgent(AgentThreadedBase):
         """
         try:
             self.c.execute("""SELECT * FROM tracks WHERE track_name=? AND artist_name=?""", (track_name, artist_name))
-            track_tuple=self.c.fetchone()[0]
+            track_tuple=self.c.fetchone()
             print "!! cache._findTrack: FOUND: ", track_tuple
         except:
             print "** cache._findTrack: MISS: ", artist_name, track_name
             track_tuple=None
             
-        track=Track(track_tuple)
-        track.track_name=track_name
-        track.artist_name=artist_name
+        track=makeTrackDict(track_tuple)
+        track["track_name"]=track_name
+        track["artist_name"]=artist_name
         
         return track
 
@@ -172,12 +156,3 @@ if __name__!="__main__":
     _.start()
 
 
-if __name__=="__main__":
-    t=Track()
-    print t.artist_name
-    t.track_name="track name!"
-    print t.track_name
-    
-    d=t["test_dic"]
-    print d
-    

@@ -13,6 +13,7 @@
     @author: jldupont
     @date: May 29, 2010
 """
+import copy
 from Queue import Queue, Empty, Full
 
 import musicbrainz2.webservice as ws #@UnresolvedImport
@@ -37,10 +38,11 @@ class MBQuery(object):
         
         f=ws.TrackFilter(title=title, artistName=artist)
         results=q.getTracks(f)
-
         return results
     
-        
+
+       
+
 
 class MBAgent(AgentThreadedBase):
 
@@ -61,12 +63,9 @@ class MBAgent(AgentThreadedBase):
         @param ticks_second: number of ticks per second
         @param tick_second:  True for when the 'tick' marks the second
         """
-        
         ## Only 1 call / second to Musicbrainz
         if not tick_second:
             return
-        
-        print "mb.h_tick"
         
         try:
             (ref, track)=self.qtodo.get(block=False)
@@ -77,11 +76,9 @@ class MBAgent(AgentThreadedBase):
         if track is None:
             return
         
-        track=self._queryTrack(track)
-        if track is not None:
-            print ">>> mb result: ", track
-            self.pub("track", "mb", ref, track)
-        
+        btrack=self._queryTrack(track)
+        if btrack is not None:
+            self.pub("track", "mb", ref, btrack)
         
 
     def h_track(self, _source, ref, track):
@@ -91,20 +88,22 @@ class MBAgent(AgentThreadedBase):
         @param ref: opaque reference
         @param track: track details object
         """
-        print "mb.h_track, source, ref, track", _source, ref, track
+        #print "mb.h_track, source, ref, track", _source, ref, track
         
         ## if the track message already contains
         ##  an mbid id, then no use making a call to Musicbrainz:
         ##  it is the 'cache agent' that's probably emitting this message 
-        track_mbid=track["track_mbid"]
+        track_mbid=track.get("track_mbid", None)
         if track_mbid is not None:
             return
         
+        ctrack=copy.deepcopy(track)
+        
         try:
-            self.qtodo.put((ref, track), block=False)
+            self.qtodo.put((ref, ctrack))
             print "mb.h_track: adding to TODO"
         except Full:
-            self.pub("mb_queue_full", (ref, track))
+            self.pub("mb_queue_full", (ref, ctrack))
         
     
     ## ================================================================== PRIVATE
@@ -136,15 +135,17 @@ class MBAgent(AgentThreadedBase):
         
         print "mb._queryTrack: track_mbid: ", tuuid
         
-        track["track_mbid"]=tuuid
-        track["artist_mbid"]=auuid
+        btrack=copy.deepcopy(track)
+        
+        btrack["track_mbid"]=tuuid
+        btrack["artist_mbid"]=auuid
 
         ## Add these details to the original 'track' object:
         ##  these should help populate the cache with useful information                
-        track["mb_artist_name"]=artist
-        track["mb_track_name"]=title
+        btrack["mb_artist_name"]=artist
+        btrack["mb_track_name"]=title
         
-        return track
+        return btrack
     
         
         

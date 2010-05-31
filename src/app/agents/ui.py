@@ -89,7 +89,7 @@ class UiWindow(gobject.GObject): #@UndefinedVariable
         For computing the 'hits' and 'misses'
         """
         if source == "cache":
-            if track.track_mbid is not None:
+            if track.get("track_mbid", None) is not None:
                 self.cHits += 1
                 self.hits.set_text(str(self.cHits))
         else:
@@ -129,5 +129,5 @@ class UiWindow(gobject.GObject): #@UndefinedVariable
         
 ui=UiWindow(glade_file)
 gobject.timeout_add(TIME_BASE, ui.tick)
-gtk.main()
+
 
