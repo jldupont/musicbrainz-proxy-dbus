@@ -11,7 +11,6 @@
     @author: jldupont
     @date: May 28, 2010
 """
-import copy
 import os
 import sqlite3
 import time
@@ -61,20 +60,18 @@ class CacheAgent(AgentThreadedBase):
         """
         Question: 'track?'
         """
-        print "Cache.h_qtrack: artist(%s) track(%s)" % (artist_name, track_name)
+        #print "Cache.h_qtrack: artist(%s) track(%s)" % (artist_name, track_name)
         track=self._findTrack(artist_name, track_name)
         self.pub("track", "cache", ref, track)
 
-    #def h_tick(self, *_):
-    #    print "cache.h_tick"
-          
     def h_track(self, _source, _ref, track):
         """
         Handler for the 'track' message
         
         Updates the cache, if necessary
         """
-        print "cache.h_track"
+        if track is None:
+            return
         
         ## If no mbid is present, don't bother updating the cache
         ##  because the mbid is the most important piece of it all
@@ -139,15 +136,12 @@ class CacheAgent(AgentThreadedBase):
         try:
             self.c.execute("""SELECT * FROM tracks WHERE track_name=? AND artist_name=?""", (track_name, artist_name))
             track_tuple=self.c.fetchone()
-            print "!! cache._findTrack: FOUND: ", track_tuple
         except:
-            print "** cache._findTrack: MISS: ", artist_name, track_name
             track_tuple=None
             
         track=makeTrackDict(track_tuple)
         track["track_name"]=track_name
         track["artist_name"]=artist_name
-        
         return track
 
 

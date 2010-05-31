@@ -6,7 +6,7 @@
 """
 
 from threading import Thread
-from Queue import Queue, Empty
+from Queue import Queue
 
 __all__=["publish", "subscribe"]
 

@@ -54,6 +54,7 @@ class UiWindow(gobject.GObject): #@UndefinedVariable
         self.mbfailed=self.builder.get_object("lMBFailedData")
         self.hits=self.builder.get_object("lHitsData")
         self.misses=self.builder.get_object("lMissesData")
+        self.notfound=self.builder.get_object("lNotFoundData")
 
         self.window.connect("destroy-event", self.on_destroy)
         self.window.connect("destroy",       self.on_destroy)
@@ -64,6 +65,7 @@ class UiWindow(gobject.GObject): #@UndefinedVariable
         self.cHits = 0
         self.cMisses = 0
         self.cFailed = 0
+        self.cNotFound = 0
         
     def on_destroy(self, *_):
         mswitch.publish("__ui__", "__quit__")
@@ -88,13 +90,19 @@ class UiWindow(gobject.GObject): #@UndefinedVariable
         """
         For computing the 'hits' and 'misses'
         """
+        if track is None:
+            self.cNotFound += 1
+            self.notfound.set_text(str(self.cNotFound))
+            return
+        
+        #print "ui.h_track: ", source, _ref, track
         if source == "cache":
             if track.get("track_mbid", None) is not None:
                 self.cHits += 1
                 self.hits.set_text(str(self.cHits))
-        else:
-            self.cMisses += 1
-            self.misses.set_text(str(self.cMisses))
+            else:
+                self.cMisses += 1
+                self.misses.set_text(str(self.cMisses))
             
 
     def h_mb_error(self, *_):

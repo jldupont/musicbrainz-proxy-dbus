@@ -23,8 +23,8 @@ class TestAgent(AgentThreadedBase):
         if self.c > self.LIMIT:
             return
         
-        print "test!"
         self.pub("track?", "test", "Beyonce", "Baby Boy")
+        self.pub("track?", "test", "Beyonce", "Baby Boy2")
         
 
 

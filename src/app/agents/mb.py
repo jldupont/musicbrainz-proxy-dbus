@@ -8,6 +8,7 @@
     Messages Emitted:
     - "track"
     - "mb_queue_full"
+    - "mb_error"
     
 
     @author: jldupont
@@ -77,8 +78,7 @@ class MBAgent(AgentThreadedBase):
             return
         
         btrack=self._queryTrack(track)
-        if btrack is not None:
-            self.pub("track", "mb", ref, btrack)
+        self.pub("track", "mb", ref, btrack)
         
 
     def h_track(self, _source, ref, track):
@@ -101,7 +101,6 @@ class MBAgent(AgentThreadedBase):
         
         try:
             self.qtodo.put((ref, ctrack))
-            print "mb.h_track: adding to TODO"
         except Full:
             self.pub("mb_queue_full", (ref, ctrack))
         
@@ -133,7 +132,7 @@ class MBAgent(AgentThreadedBase):
             self.pub("mb_error", e)
             return None
         
-        print "mb._queryTrack: track_mbid: ", tuuid
+        #print "mb._queryTrack: track_mbid: ", tuuid
         
         btrack=copy.deepcopy(track)
         

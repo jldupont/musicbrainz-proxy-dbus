@@ -67,10 +67,7 @@ class DbusAgent(AgentThreadedBase):
         AgentThreadedBase.__init__(self)
 
         self.srx=SignalRx(self)
-        
-    #def h_tick(self, *_):
-    #    print "adbus.h_tick"
-       
+           
         
     def hq_test_track(self, ref, artist_name, track_name):
         """
@@ -85,6 +82,9 @@ class DbusAgent(AgentThreadedBase):
         
         Send back a message on DBus
         """
+        if track is None:
+            return
+        
         details={}
         details["artist_name"]=    str( track.get("artist_name", None) )
         details["track_name"]=     str( track.get("track_name", None) )
@@ -96,7 +96,7 @@ class DbusAgent(AgentThreadedBase):
         if track.get("artist_mbid", None) is None:
             return
         
-        print "dbus.h_track: ", source, ref, track
+        #print "dbus.h_track: ", source, ref, track
         
         ## Only send a response if we have a meaningful track_mbid
         if len(track["artist_mbid"]) > 1:
