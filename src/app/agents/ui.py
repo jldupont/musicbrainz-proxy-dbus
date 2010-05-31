@@ -55,6 +55,7 @@ class UiWindow(gobject.GObject): #@UndefinedVariable
         self.hits=self.builder.get_object("lHitsData")
         self.misses=self.builder.get_object("lMissesData")
         self.notfound=self.builder.get_object("lNotFoundData")
+        self.retries_dropped=self.builder.get_object("lRetriesDroppedData")
 
         self.window.connect("destroy-event", self.on_destroy)
         self.window.connect("destroy",       self.on_destroy)
@@ -66,6 +67,7 @@ class UiWindow(gobject.GObject): #@UndefinedVariable
         self.cMisses = 0
         self.cFailed = 0
         self.cNotFound = 0
+        self.cRetriesDropped = 0
         
     def on_destroy(self, *_):
         mswitch.publish("__ui__", "__quit__")
@@ -85,6 +87,10 @@ class UiWindow(gobject.GObject): #@UndefinedVariable
         """
         self.cRequestsDropped += 1
         self.reqdrop.set_text(str(self.cRequestsDropped)) 
+
+    def h_mb_retry_dropped(self, *_):
+        self.cRetriesDropped += 1
+        self.retries_dropped.set_text(str(self.cRetriesDropped))
 
     def h_track(self, source, _ref, track):
         """

@@ -23,8 +23,9 @@ class TestAgent(AgentThreadedBase):
         if self.c > self.LIMIT:
             return
         
-        self.pub("track?", "test", "Beyonce", "Baby Boy")
-        self.pub("track?", "test", "Beyonce", "Baby Boy2")
+        self.pub("track?", "test", "Beyonce",      "Baby Boy")
+        self.pub("track?", "test", "Beyonce",      "Baby Boy2")
+        self.pub("track?", "test", "Depeche Mode", "Little 20")
         
 
 

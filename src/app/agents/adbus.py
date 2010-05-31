@@ -85,6 +85,8 @@ class DbusAgent(AgentThreadedBase):
         if track is None:
             return
         
+        ## The 'track' object might not be complete and hence
+        ##  we need to protect ourselves here.
         details={}
         details["artist_name"]=    str( track.get("artist_name", None) )
         details["track_name"]=     str( track.get("track_name", None) )
@@ -93,14 +95,9 @@ class DbusAgent(AgentThreadedBase):
         details["mb_artist_name"]= str( track.get("mb_artist_name", None) )
         details["mb_track_name"]=  str( track.get("mb_track_name", None) )
         
-        if track.get("artist_mbid", None) is None:
-            return
-        
-        #print "dbus.h_track: ", source, ref, track
-        
-        ## Only send a response if we have a meaningful track_mbid
-        if len(track["artist_mbid"]) > 1:
-            self.srx.Track(source, ref, details)
+        ## Send a response back even we do not have the sought information:
+        ##  this might help 'clients' of this proxy take corrective actions
+        self.srx.Track(source, ref, details)
 
 _=DbusAgent()
 _.start()

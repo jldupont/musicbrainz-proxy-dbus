@@ -9,11 +9,13 @@
     - "track"
     - "mb_queue_full"
     - "mb_error"
+    - "mb_retry_dropped"
     
 
     @author: jldupont
     @date: May 29, 2010
 """
+import time
 import copy
 from Queue import Queue, Empty, Full
 
@@ -48,6 +50,8 @@ class MBQuery(object):
 class MBAgent(AgentThreadedBase):
 
     QUEUE_SIZE=512
+    
+    RETRY_TIMEOUT=60*60*24
     
     def __init__(self):
         AgentThreadedBase.__init__(self)
@@ -94,9 +98,27 @@ class MBAgent(AgentThreadedBase):
         ##  an mbid id, then no use making a call to Musicbrainz:
         ##  it is the 'cache agent' that's probably emitting this message 
         track_mbid=track.get("track_mbid", None)
-        if track_mbid is not None:
-            return
         
+        try:    ltmbid=len(track_mbid)
+        except: ltmbid=0
+
+        ## Make sure we are not dealing with an empty string
+        ##  in which case 
+        if ltmbid > 0:
+            return   
+        
+        ## Let's see if we can retry fetching a possible
+        ##  entry from Musicbrainz
+        updated=track.get("updated", 0)
+        now=time.time()
+        delta=now-updated
+        
+        print "updated, now, delta: ", updated, now, delta
+        
+        if delta < self.RETRY_TIMEOUT:
+            self.pub("mb_retry_dropped", ref, track)
+            return
+            
         ctrack=copy.deepcopy(track)
         
         try:
@@ -127,7 +149,17 @@ class MBAgent(AgentThreadedBase):
             artist=result.track.artist.name
             title=result.track.title
         except IndexError,_e:
-            return None
+            ## Return a basic 'track' dictionary:
+            ##  This is useful for keeping coherent
+            ##  with the 'message type' and help the cache
+            ##  update itself i.e. 'updated' field
+            btrack={}
+            btrack["artist_name"]=track["artist_name"]
+            btrack["track_name"]=track["track_name"]
+            btrack["artist_mbid"]=None
+            btrack["track_mbid"]=None
+            return btrack
+
         except Exception,e:
             self.pub("mb_error", e)
             return None

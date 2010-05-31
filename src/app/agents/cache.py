@@ -70,22 +70,22 @@ class CacheAgent(AgentThreadedBase):
         
         Updates the cache, if necessary
         """
+        
+        ## Should occur but hey, better safe than sorry ;-)
         if track is None:
             return
-        
-        ## If no mbid is present, don't bother updating the cache
-        ##  because the mbid is the most important piece of it all
-        track_mbid=track.get("track_mbid", None)
-        if track_mbid is None:
-            return
-            
+
+        ## Update the cache regardless of the 'track' object we get:
+        ##  if the entry wasn't found on Musicbrainz, we'll have at least
+        ##  a trace of the attempt (i.e. 'updated' field) and thus we can
+        ##  rate limit the retries.        
         _new=self._updateOrInsert(track)
         
         ## Insert/Update a record based on the answer provided
         ##  by Musicbrainz: this way, we have more ways to "hit"
         ##  a potential track target in the cache
-        mb_artist_name=track["mb_artist_name"]
-        mb_track_name=track["mb_track_name"]
+        mb_artist_name=track.get("mb_artist_name", None)
+        mb_track_name=track.get("mb_track_name", None)
         
         if mb_artist_name is not None:
             if mb_track_name is not None:
