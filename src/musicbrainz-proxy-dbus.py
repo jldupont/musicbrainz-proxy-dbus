@@ -26,7 +26,7 @@ from app.system import mswitch
 from app.agents import adbus
 from app.agents import cache
 from app.agents import mb
-from app.agents import test
+#from app.agents import test
 
 from app.agents import ui
 
