@@ -88,12 +88,12 @@ class DbusAgent(AgentThreadedBase):
         ## The 'track' object might not be complete and hence
         ##  we need to protect ourselves here.
         details={}
-        details["artist_name"]=    str( track.get("artist_name", None) )
-        details["track_name"]=     str( track.get("track_name", None) )
-        details["artist_mbid"]=    str( track.get("artist_mbid", None) )
-        details["track_mbid"]=     str( track.get("track_mbid", None) )
-        details["mb_artist_name"]= str( track.get("mb_artist_name", None) )
-        details["mb_track_name"]=  str( track.get("mb_track_name", None) )
+        details["artist_name"]=    str( track.get("artist_name", "") )
+        details["track_name"]=     str( track.get("track_name", "") )
+        details["artist_mbid"]=    str( track.get("artist_mbid", "") )
+        details["track_mbid"]=     str( track.get("track_mbid", "") )
+        details["mb_artist_name"]= str( track.get("mb_artist_name", "") )
+        details["mb_track_name"]=  str( track.get("mb_track_name", "") )
         
         ## Send a response back even we do not have the sought information:
         ##  this might help 'clients' of this proxy take corrective actions

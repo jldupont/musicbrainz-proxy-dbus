@@ -106,12 +106,15 @@ class CacheAgent(AgentThreadedBase):
         new=False
         now=time.time()        
 
+        artist_name=unicode(track["artist_name"])
+        track_name=unicode(track["track_name"])
+
         self.c.execute("""UPDATE tracks SET 
                         track_mbid=?, artist_mbid=?,
                         updated=? WHERE artist_name=? AND track_name=?""", 
                         (track["track_mbid"], track["artist_mbid"],
                          now,
-                        track["artist_name"], track["track_name"],
+                        artist_name, track_name,
                         ))
         
         
@@ -120,8 +123,8 @@ class CacheAgent(AgentThreadedBase):
                             track_name, track_mbid,
                             artist_name, artist_mbid
                             ) VALUES (?, ?, ?, ?, ?, ?)""", 
-                            (now, 0, track["track_name"], track["track_mbid"],
-                            track["artist_name"], track["artist_mbid"]) )
+                            (now, 0, track_name, track["track_mbid"],
+                            artist_name, track["artist_mbid"]) )
             new=True
             
         self.conn.commit()
@@ -134,7 +137,8 @@ class CacheAgent(AgentThreadedBase):
         Locates a 'track'
         """
         try:
-            self.c.execute("""SELECT * FROM tracks WHERE track_name=? AND artist_name=?""", (track_name, artist_name))
+            self.c.execute("""SELECT * FROM tracks WHERE track_name=? AND artist_name=?""", 
+                           (unicode(track_name), unicode(artist_name)))
             track_tuple=self.c.fetchone()
         except:
             track_tuple=None

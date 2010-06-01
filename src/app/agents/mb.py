@@ -113,7 +113,7 @@ class MBAgent(AgentThreadedBase):
         now=time.time()
         delta=now-updated
         
-        print "updated, now, delta: ", updated, now, delta
+        #print "updated, now, delta: ", updated, now, delta
         
         if delta < self.RETRY_TIMEOUT:
             self.pub("mb_retry_dropped", ref, track)
