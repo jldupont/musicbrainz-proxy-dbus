@@ -96,7 +96,11 @@ class UiWindow(gobject.GObject): #@UndefinedVariable
         """
         For computing the 'hits' and 'misses'
         """
-        if track is None:
+        try:    track_mbid=track["track_mbid"]
+        except: track_mbid=None
+        
+        
+        if track is None or track_mbid is None:
             self.cNotFound += 1
             self.notfound.set_text(str(self.cNotFound))
             return

@@ -1,5 +1,5 @@
 musicbrainzproxydbus (_VERSION_-1jldupont1~_DIST_1)  _DIST_; urgency=low
 
-  * forced unicode coercing
+  * fixed "not found" counter
  
  -- Jean-Lou Dupont <jl@jldupont.com>  Mon, 31 May 2010 07:17:00 -0500
