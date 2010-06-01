@@ -24,6 +24,18 @@ The resulting output signal if the track is either found in the cache or through
   * param 3: track details: a{sv}
 
 
+Track Details
+-------------
+
+A dictionary containing the following keys:
+
+ - "artist_name"
+ - "track_name"
+ - "artist_mbid"
+ - "track_mbid"
+ - "mb_artist_name"
+ - "mb_track_name"
+
 
 Installation
 ============
