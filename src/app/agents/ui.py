@@ -99,15 +99,15 @@ class UiWindow(gobject.GObject): #@UndefinedVariable
         try:    track_mbid=track["track_mbid"]
         except: track_mbid=None
         
-        
-        if track is None or track_mbid is None:
-            self.cNotFound += 1
-            self.notfound.set_text(str(self.cNotFound))
-            return
+        if source=="mb":
+            if track is None or track_mbid is None:
+                self.cNotFound += 1
+                self.notfound.set_text(str(self.cNotFound))
+                return
         
         #print "ui.h_track: ", source, _ref, track
         if source == "cache":
-            if track.get("track_mbid", None) is not None:
+            if track_mbid!="" and track_mbid is not None:
                 self.cHits += 1
                 self.hits.set_text(str(self.cHits))
             else:
