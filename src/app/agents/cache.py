@@ -60,6 +60,20 @@ class CacheAgent(AgentThreadedBase):
         """
         Question: 'track?'
         """
+        try:    l=len(artist_name)
+        except: l=0
+        
+        if artist_name is None or l==0:
+            self.pub("log", "error", "qTrack: invalid artist_name")
+            return
+        
+        try:    l=len(track_name)
+        except: l=0
+        if track_name is None or l==0:
+            self.pub("log", "error", "qTrack: invalid track_name")
+            return
+        
+        
         #print "Cache.h_qtrack: artist(%s) track(%s)" % (artist_name, track_name)
         tlist=[]
         

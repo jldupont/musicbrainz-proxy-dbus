@@ -38,7 +38,6 @@ class MBQuery(object):
         q=ws.Query()
         title=self.track["track_name"]
         artist=self.track["artist_name"]
-        
         f=ws.TrackFilter(title=title, artistName=artist)
         results=q.getTracks(f)
         return results
@@ -134,6 +133,13 @@ class MBAgent(AgentThreadedBase):
         
     
     ## ================================================================== PRIVATE
+    def _buildDefault(self, track):
+        dtrack={}
+        dtrack["artist_name"]=track["artist_name"]
+        dtrack["track_name"]=track["track_name"]
+        dtrack["artist_mbid"]=None
+        dtrack["track_mbid"]=None
+        return dtrack
     
     def _queryTrack(self, track):
         """
@@ -141,13 +147,30 @@ class MBAgent(AgentThreadedBase):
         
         We are assuming that the first result has the highest 'score'
         """
+        artist_name=track["artist_name"]
+        track_name=track["track_name"]
+        
+        try:    la=len(artist_name)
+        except: la=0
+        
+        try:    lt=len(track_name)
+        except: lt=0
+        
+        if la==0:
+            self.pub("log", "error", "Query: invalid artist name")
+            return None
+        
+        if lt==0:
+            self.pub("log", "error", "Query: invalid track name")
+            return None
+        
         mbq=MBQuery(track)
         try:
             results=mbq.do()
         except Exception,e:
             self.pub("mb_error", e)
-            self.pub("log", "error", "Failed call to Musicbrainz webservice")
-            return None
+            self.pub("log", "error", "Failed call to Musicbrainz webservice: %s" % e)
+            return self._buildDefault(track)
         
         try:
             result=results[0]
@@ -160,14 +183,8 @@ class MBAgent(AgentThreadedBase):
             ##  This is useful for keeping coherent
             ##  with the 'message type' and help the cache
             ##  update itself i.e. 'updated' field
-            btrack={}
-            btrack["artist_name"]=track["artist_name"]
-            btrack["track_name"]=track["track_name"]
-            btrack["artist_mbid"]=None
-            btrack["track_mbid"]=None
-            
             self.pub("log", "warning", "Not found on Musicbrainz: artist(%s) track(%s)" % (track["artist_name"], track["track_name"]))
-            return btrack
+            return self._buildDefault(track)
 
         except Exception,e:
             self.pub("mb_error", e)

@@ -86,7 +86,8 @@ class DbusAgent(AgentThreadedBase):
     
         result=[]
         for track in tracks:
-            result.append(self._format(track))
+            if track is not None:
+                result.append(self._format(track))
             
         self.srx.Tracks(source, ref, result)
             
