@@ -88,7 +88,7 @@ class CacheAgent(AgentThreadedBase):
         self.pub("tracks", "cache", ref, tlist)
             
 
-    def h_track(self, _source, _ref, track):
+    def h_tracks(self, _source, _ref, tracks):
         """
         Handler for the 'track' message
         
@@ -96,8 +96,10 @@ class CacheAgent(AgentThreadedBase):
         """
         
         ## Should occur but hey, better safe than sorry ;-)
-        if track is None:
+        if tracks is None:
             return
+
+        track=tracks[0]
 
         ## Update the cache regardless of the 'track' object we get:
         ##  if the entry wasn't found on Musicbrainz, we'll have at least

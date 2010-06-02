@@ -1,4 +1,4 @@
-musicbrainz-proxy-dbus (_VERSION_-2jldupont1~_DIST_1)  _DIST_; urgency=low
+musicbrainz-proxy-dbus (_VERSION_-3jldupont1~_DIST_1)  _DIST_; urgency=low
 
   * v2.0 with Tracks signal 
  

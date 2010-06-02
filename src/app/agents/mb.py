@@ -82,10 +82,10 @@ class MBAgent(AgentThreadedBase):
             return
         
         btrack=self._queryTrack(track)
-        self.pub("track", "mb", ref, btrack)
+        self.pub("tracks", "mb", ref, [btrack])
         
 
-    def h_track(self, _source, ref, track):
+    def h_tracks(self, _source, ref, tracks):
         """
         Handler for the 'track' message
     
@@ -94,16 +94,19 @@ class MBAgent(AgentThreadedBase):
         """
         #print "mb.h_track, source, ref, track", _source, ref, track
         
+        ## Let's see if we have something todo...
+        track=tracks[0]
+        
         ## if the track message already contains
         ##  an mbid id, then no use making a call to Musicbrainz:
         ##  it is the 'cache agent' that's probably emitting this message 
-        track_mbid=track.get("track_mbid", None)
+        track_mbid=track.get("track_mbid", "")
         
         try:    ltmbid=len(track_mbid)
         except: ltmbid=0
 
-        ## Make sure we are not dealing with an empty string
-        ##  in which case 
+        ## We'll have to call the MB service to resolve this track
+        ##  since we don't see a valid MBID...
         if ltmbid > 0:
             return   
         
@@ -118,7 +121,7 @@ class MBAgent(AgentThreadedBase):
         if delta < self.RETRY_TIMEOUT:
             artist_name=track.get("artist_name", "")
             track_name=track.get("track_name", "")
-            self.pub("log", "Will retry later: artist(%s) track(%)" % (artist_name, track_name))
+            self.pub("log", "Will retry later: artist(%s) track(%s)" % (artist_name, track_name))
             self.pub("mb_retry_dropped", ref, track)
             return
             
