@@ -49,7 +49,7 @@ class MBQuery(object):
 
 class MBAgent(AgentThreadedBase):
 
-    QUEUE_SIZE=512
+    QUEUE_SIZE=8192
     
     RETRY_TIMEOUT=60*60*24
     
@@ -116,6 +116,9 @@ class MBAgent(AgentThreadedBase):
         #print "updated, now, delta: ", updated, now, delta
         
         if delta < self.RETRY_TIMEOUT:
+            artist_name=track.get("artist_name", "")
+            track_name=track.get("track_name", "")
+            self.pub("log", "Will retry later: artist(%s) track(%)" % (artist_name, track_name))
             self.pub("mb_retry_dropped", ref, track)
             return
             
@@ -140,6 +143,7 @@ class MBAgent(AgentThreadedBase):
             results=mbq.do()
         except Exception,e:
             self.pub("mb_error", e)
+            self.pub("log", "error", "Failed call to Musicbrainz webservice")
             return None
         
         try:
@@ -158,6 +162,8 @@ class MBAgent(AgentThreadedBase):
             btrack["track_name"]=track["track_name"]
             btrack["artist_mbid"]=None
             btrack["track_mbid"]=None
+            
+            self.pub("log", "warning", "Not found on Musicbrainz: artist(%s) track(%s)" % (track["artist_name"], track["track_name"]))
             return btrack
 
         except Exception,e:

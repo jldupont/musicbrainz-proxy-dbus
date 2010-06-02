@@ -61,8 +61,32 @@ class CacheAgent(AgentThreadedBase):
         Question: 'track?'
         """
         #print "Cache.h_qtrack: artist(%s) track(%s)" % (artist_name, track_name)
+        tlist=[]
+        
         track=self._findTrack(artist_name, track_name)
-        self.pub("track", "cache", ref, track)
+        
+        track_mbid=track.get("track_mbid", "")
+        
+        ## only one result unfortunately...
+        if track_mbid is None or track_mbid=="":
+            self.pub("tracks", "cache", ref, [track])
+            return
+        
+        ## maybe we'll get lucky and pull more tracks
+        ## based on the mbid we got...
+        tracks=self._findTracksBasedOnTrackMbid(track_mbid)
+        
+        ## nope, just one still
+        if tracks is None:
+            self.pub("tracks", "cache", ref, [track])
+            return
+            
+        for track_tuple in tracks:
+            t=makeTrackDict(track_tuple)
+            tlist.append(t)
+
+        self.pub("tracks", "cache", ref, tlist)
+            
 
     def h_track(self, _source, _ref, track):
         """
@@ -79,7 +103,13 @@ class CacheAgent(AgentThreadedBase):
         ##  if the entry wasn't found on Musicbrainz, we'll have at least
         ##  a trace of the attempt (i.e. 'updated' field) and thus we can
         ##  rate limit the retries.        
-        _new=self._updateOrInsert(track)
+        new=self._updateOrInsert(track)
+        
+        if new:
+            artist_name=track["artist_name"]
+            track_name= track["track_name"]
+            track_mbid= track["track_mbid"]
+            self.pub("log", "New: artist(%s) track(%s) mbid(%s)" % (artist_name, track_name, track_mbid))
         
         ## Insert/Update a record based on the answer provided
         ##  by Musicbrainz: this way, we have more ways to "hit"
@@ -147,6 +177,20 @@ class CacheAgent(AgentThreadedBase):
         track["track_name"]=track_name
         track["artist_name"]=artist_name
         return track
+
+
+    def _findTracksBasedOnTrackMbid(self, track_mbid):
+        """
+        Locates tracks based on track_mbid
+        """
+        try:
+            self.c.execute("""SELECT * FROM tracks WHERE track_mbid=?""", 
+                           (track_mbid,))
+            track_tuples=self.c.fetchall()
+        except:
+            track_tuples=None
+            
+        return track_tuples
 
 
 if __name__!="__main__":

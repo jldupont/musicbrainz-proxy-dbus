@@ -92,10 +92,12 @@ class UiWindow(gobject.GObject): #@UndefinedVariable
         self.cRetriesDropped += 1
         self.retries_dropped.set_text(str(self.cRetriesDropped))
 
-    def h_track(self, source, _ref, track):
+    def h_tracks(self, source, _ref, tracks):
         """
         For computing the 'hits' and 'misses'
         """
+        track=tracks[0]
+        
         try:    track_mbid=track["track_mbid"]
         except: track_mbid=None
         

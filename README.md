@@ -18,10 +18,12 @@ The resulting output signal if the track is either found in the cache or through
 
 * interface: com.jldupont.musicbrainz.proxy
 * path: 'Tracks'
-* signal name: 'Track'
+* signal name: 'Tracks'
   * param 1: source: string (either 'cache' or 'mb')
   * param 2: ref 
-  * param 3: track details: a{sv}
+  * param 3: list of track details: aa{sv}
+  
+In other words, the resulting signal contains a 'list' of dictionaries of 'details'
 
 
 Track Details
@@ -35,6 +37,14 @@ A dictionary containing the following keys:
  - "track_mbid"
  - "mb_artist_name"
  - "mb_track_name"
+
+Managed Files
+=============
+
+This application manages the following files:
+
+ - ~/musicbrainz-proxy.log :    log file
+ - ~/musicbrainz-proxy.sqlite : cache database file
 
 
 Installation

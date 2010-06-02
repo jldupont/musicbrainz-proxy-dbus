@@ -5,7 +5,7 @@
     - "track?"
     
     Messages Processed:
-    - 
+    - "track"
 
     @author: jldupont
     @date: May 28, 2010
@@ -35,8 +35,8 @@ class SignalRx(dbus.service.Object):
                                        path="/Tracks"
                                        )            
 
-    @dbus.service.signal(dbus_interface="com.jldupont.musicbrainz.proxy", signature="ssa{sv}")
-    def Track(self, source, ref, dic):
+    @dbus.service.signal(dbus_interface="com.jldupont.musicbrainz.proxy", signature="ssaa{sv}")
+    def Tracks(self, source, ref, list_dic):
         pass
 
 
@@ -75,18 +75,23 @@ class DbusAgent(AgentThreadedBase):
         """
         self.pub("track?", ref, artist_name, track_name)
         
-        
-    def h_track(self, source, ref, track):
+    def h_tracks(self, source, ref, tracks):
         """
-        Handler for the 'track' message
+        Handler for the 'tracks' message
         
-        Send back a message on DBus
+        Sends back a message on DBus
         """
-        if track is None:
+        if tracks is None:
             return
+    
+        result=[]
+        for track in tracks:
+            result.append(self._format(track))
+            
+        self.srx.Tracks(source, ref, result)
+            
         
-        ## The 'track' object might not be complete and hence
-        ##  we need to protect ourselves here.
+    def _format(self, track):
         details={}
         details["artist_name"]=    str( track.get("artist_name", "") )
         details["track_name"]=     str( track.get("track_name", "") )
@@ -94,10 +99,9 @@ class DbusAgent(AgentThreadedBase):
         details["track_mbid"]=     str( track.get("track_mbid", "") )
         details["mb_artist_name"]= str( track.get("mb_artist_name", "") )
         details["mb_track_name"]=  str( track.get("mb_track_name", "") )
+        return details
+    
         
-        ## Send a response back even we do not have the sought information:
-        ##  this might help 'clients' of this proxy take corrective actions
-        self.srx.Track(source, ref, details)
 
 _=DbusAgent()
 _.start()
