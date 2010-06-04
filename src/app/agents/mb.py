@@ -137,8 +137,8 @@ class MBAgent(AgentThreadedBase):
         dtrack={}
         dtrack["artist_name"]=track["artist_name"]
         dtrack["track_name"]=track["track_name"]
-        dtrack["artist_mbid"]=None
-        dtrack["track_mbid"]=None
+        dtrack["artist_mbid"]=""
+        dtrack["track_mbid"]=""
         return dtrack
     
     def _queryTrack(self, track):

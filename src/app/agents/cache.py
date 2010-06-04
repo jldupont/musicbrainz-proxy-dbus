@@ -79,6 +79,8 @@ class CacheAgent(AgentThreadedBase):
         
         track=self._findTrack(artist_name, track_name)
         
+        track["artist_name"]=artist_name
+        track["track_name"]=track_name
         track_mbid=track.get("track_mbid", "")
         
         ## only one result unfortunately...
@@ -118,8 +120,12 @@ class CacheAgent(AgentThreadedBase):
         ## Update the cache regardless of the 'track' object we get:
         ##  if the entry wasn't found on Musicbrainz, we'll have at least
         ##  a trace of the attempt (i.e. 'updated' field) and thus we can
-        ##  rate limit the retries.        
-        new=self._updateOrInsert(track)
+        ##  rate limit the retries.  
+        try:      
+            new=self._updateOrInsert(track)
+        except Exception,e:
+            self.pub("log", "error", "Exception whilst Accessing database: %s" % e)
+            return
         
         if new:
             artist_name=track["artist_name"]
@@ -135,13 +141,16 @@ class CacheAgent(AgentThreadedBase):
         
         if mb_artist_name is not None:
             if mb_track_name is not None:
-                details=(0,0,0,  ## fillout anyhow by update/insert method
+                details=(0,0,0,  ## filled out anyhow by update/insert method
                          mb_track_name,  track["track_mbid"],
                          mb_artist_name, track["artist_mbid"]
                          )
                 
                 mb_track=makeTrackDict(details)
-                self._updateOrInsert(mb_track)
+                try:
+                    self._updateOrInsert(mb_track)
+                except Exception,e:
+                    self.pub("log", "error", "Exception whilst Accessing database: %s" % e)                   
         
         
     ## ========================================================= PRIVATE
@@ -188,10 +197,8 @@ class CacheAgent(AgentThreadedBase):
             track_tuple=self.c.fetchone()
         except:
             track_tuple=None
-            
+
         track=makeTrackDict(track_tuple)
-        track["track_name"]=track_name
-        track["artist_name"]=artist_name
         return track
 
 
@@ -200,8 +207,7 @@ class CacheAgent(AgentThreadedBase):
         Locates tracks based on track_mbid
         """
         try:
-            self.c.execute("""SELECT * FROM tracks WHERE track_mbid=?""", 
-                           (track_mbid,))
+            self.c.execute("""SELECT * FROM tracks WHERE track_mbid=?""", (track_mbid,))
             track_tuples=self.c.fetchall()
         except:
             track_tuples=None

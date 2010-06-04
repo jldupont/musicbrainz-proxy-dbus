@@ -1,5 +1,5 @@
-musicbrainz-proxy-dbus (_VERSION_-3jldupont1~_DIST_1)  _DIST_; urgency=low
+musicbrainz-proxy-dbus (_VERSION_-4jldupont1~_DIST_1)  _DIST_; urgency=low
 
-  * v2.1: added protection against MB webservice failures 
+  * v2.2: minor change: track_mbid will never be "None" anymore 
  
- -- Jean-Lou Dupont <jl@jldupont.com>  Wed, 02 Jun 2010 07:17:00 -0500
+ -- Jean-Lou Dupont <jl@jldupont.com>  Fri, 04 Jun 2010 07:17:00 -0500
