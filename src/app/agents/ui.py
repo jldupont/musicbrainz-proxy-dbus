@@ -115,8 +115,11 @@ class UiWindow(gobject.GObject): #@UndefinedVariable
             else:
                 self.cMisses += 1
                 self.misses.set_text(str(self.cMisses))
-            
-
+                
+    def h_cache_miss(self, *_):
+        self.cMisses += 1
+        self.misses.set_text(str(self.cMisses))
+        
     def h_mb_error(self, *_):
         """
         For computing 'failed' counter

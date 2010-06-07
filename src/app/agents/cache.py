@@ -3,10 +3,11 @@
 
     Messages Emitted:
     - "track"
+    - "cache_miss"
     
     Messages Processed:
     - "track?"
-    - "track"
+    - "tracks"
     
     @author: jldupont
     @date: May 28, 2010
@@ -84,8 +85,9 @@ class CacheAgent(AgentThreadedBase):
         track_mbid=track.get("track_mbid", "")
         
         ## only one result unfortunately...
+        ## changed in 2.3
         if track_mbid is None or track_mbid=="":
-            self.pub("tracks", "cache", ref, [track])
+            self.pub("cache_miss", ref, track)
             return
         
         ## maybe we'll get lucky and pull more tracks
@@ -215,8 +217,8 @@ class CacheAgent(AgentThreadedBase):
         return track_tuples
 
 
-if __name__!="__main__":
-    _=CacheAgent()
-    _.start()
+
+_=CacheAgent()
+_.start()
 
 

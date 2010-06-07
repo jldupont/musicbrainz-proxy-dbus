@@ -2,11 +2,11 @@
     Musicbrainz Agent
 
     Messages Processed:
-    - "track"
     - "tick"
+    - "cache_miss"
     
     Messages Emitted:
-    - "track"
+    - "tracks"
     - "mb_queue_full"
     - "mb_error"
     - "mb_retry_dropped"
@@ -84,30 +84,14 @@ class MBAgent(AgentThreadedBase):
         self.pub("tracks", "mb", ref, [btrack])
         
 
-    def h_tracks(self, _source, ref, tracks):
+    def h_cache_miss(self, ref, track):
         """
-        Handler for the 'track' message
+        Handler for the 'cache_miss' message
     
         @param ref: opaque reference
         @param track: track details object
         """
         #print "mb.h_track, source, ref, track", _source, ref, track
-        
-        ## Let's see if we have something todo...
-        track=tracks[0]
-        
-        ## if the track message already contains
-        ##  an mbid id, then no use making a call to Musicbrainz:
-        ##  it is the 'cache agent' that's probably emitting this message 
-        track_mbid=track.get("track_mbid", "")
-        
-        try:    ltmbid=len(track_mbid)
-        except: ltmbid=0
-
-        ## We'll have to call the MB service to resolve this track
-        ##  since we don't see a valid MBID...
-        if ltmbid > 0:
-            return   
         
         ## Let's see if we can retry fetching a possible
         ##  entry from Musicbrainz
