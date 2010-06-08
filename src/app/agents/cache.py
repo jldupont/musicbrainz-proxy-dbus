@@ -41,6 +41,8 @@ class CacheAgent(AgentThreadedBase):
     
     DBPATH="~/musicbrainz-proxy.sqlite"
     
+    REFRESH_TIMEOUT=10 ##seconds
+    
     def __init__(self):
         AgentThreadedBase.__init__(self)
 
@@ -55,7 +57,28 @@ class CacheAgent(AgentThreadedBase):
                             artist_name text, artist_mbid text)
                         """)
         
+        self.refresh_counter=0
+        
     ## ========================================================= HANDLERS
+    def h_tick(self, _ticks_per_second, second_marker):
+        """
+        """
+        if second_marker:
+            self.refresh_counter += 1
+            
+        if self.refresh_counter == self.REFRESH_TIMEOUT:
+            self.refresh_counter=0
+            self._doRefresh()
+        
+    def _doRefresh(self):
+        """
+        Refresh the stats
+        """
+        total_records=self.getRowCount()
+        total_records_mbid=self.getRowCountWithTrackMbid()
+        
+        self.pub("cache_stats", total_records, total_records_mbid)
+        
         
     def hq_track(self, ref, artist_name, track_name):
         """
@@ -216,7 +239,27 @@ class CacheAgent(AgentThreadedBase):
             
         return track_tuples
 
+    def getRowCount(self):
+        """
+        Returns the total row count
+        """
+        try:
+            self.c.execute("""SELECT Count(*) FROM tracks""")    
+            count=self.c.fetchone()[0]
+        except: count=0
+        
+        return count
 
+    def getRowCountWithTrackMbid(self):
+        """
+        Returns the total row count
+        """
+        try:
+            self.c.execute("""SELECT Count(*) FROM tracks WHERE track_mbid<>'' """)    
+            count=self.c.fetchone()[0]
+        except: count=0
+        
+        return count
 
 _=CacheAgent()
 _.start()

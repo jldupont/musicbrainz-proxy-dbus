@@ -57,6 +57,10 @@ class UiWindow(gobject.GObject): #@UndefinedVariable
         self.notfound=self.builder.get_object("lNotFoundData")
         self.retries_dropped=self.builder.get_object("lRetriesDroppedData")
 
+        self.total_records=self.builder.get_object("lTotalRecordsData")
+        self.records_mbid=self.builder.get_object("lRecordsWithMbidData")
+        self.job_queue=self.builder.get_object("lJobQueueData")
+
         self.window.connect("destroy-event", self.on_destroy)
         self.window.connect("destroy",       self.on_destroy)
         self.window.present()
@@ -73,6 +77,12 @@ class UiWindow(gobject.GObject): #@UndefinedVariable
         mswitch.publish("__ui__", "__quit__")
         gtk.main_quit()
 
+    def h_job_queue(self, depth):
+        self.job_queue.set_text(str(depth))
+
+    def h_cache_stats(self, ctotal_records, ctotal_records_mbid):
+        self.total_records.set_text(str(ctotal_records))
+        self.records_mbid.set_text(str(ctotal_records_mbid))
 
     def hq_track(self, *_):
         """

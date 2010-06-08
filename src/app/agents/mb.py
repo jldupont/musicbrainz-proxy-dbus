@@ -52,11 +52,13 @@ class MBAgent(AgentThreadedBase):
     
     RETRY_TIMEOUT=60*60*24
     
+    REFRESH_TIMEOUT=5
+    
     def __init__(self):
         AgentThreadedBase.__init__(self)
 
         self.qtodo=Queue(self.QUEUE_SIZE)
-
+        self.refresh_count=0
 
     ## ================================================================== HANDLERS
 
@@ -70,6 +72,11 @@ class MBAgent(AgentThreadedBase):
         ## Only 1 call / second to Musicbrainz
         if not tick_second:
             return
+
+        self.refresh_count += 1
+        if self.refresh_count > self.REFRESH_TIMEOUT:
+            self.refresh_count=0
+            self._doRefresh()
         
         try:
             (ref, track)=self.qtodo.get(block=False)
@@ -83,6 +90,8 @@ class MBAgent(AgentThreadedBase):
         btrack=self._queryTrack(track)
         self.pub("tracks", "mb", ref, [btrack])
         
+    def _doRefresh(self):
+        self.pub("job_queue", self.qtodo.qsize())
 
     def h_cache_miss(self, ref, track):
         """
@@ -111,7 +120,7 @@ class MBAgent(AgentThreadedBase):
         ctrack=copy.deepcopy(track)
         
         try:
-            self.qtodo.put((ref, ctrack))
+            self.qtodo.put((ref, ctrack), block=False)
         except Full:
             self.pub("mb_queue_full", (ref, ctrack))
         

@@ -60,4 +60,10 @@ Dependencies
 
 * python-musicbrainz2
 
+History
+=======
+
+ - v2.3: the 'cache' in the application won't return 'Tracks' signal on a 'cache miss'
+ - v2.4: added statistics "total records", "records with track_mbid", "job queue depth"
+ 
 [Home](http://www.systemical.com/ "Home")
