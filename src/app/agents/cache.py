@@ -17,6 +17,7 @@ import sqlite3
 import time
 
 from app.system.base import AgentThreadedBase
+from app.system.filter import filterArtist
 
 __all__=[]
 
@@ -95,6 +96,12 @@ class CacheAgent(AgentThreadedBase):
         except: l=0
         if track_name is None or l==0:
             self.pub("log", "error", "qTrack: invalid track_name")
+            return
+        
+        ## perform filtering phase
+        if filterArtist(artist_name):
+            self.pub("log", "warning", "Filtered artist(%s) track(%s)" % (artist_name, track_name))
+            self.pub("filtered", artist_name, track_name)
             return
         
         

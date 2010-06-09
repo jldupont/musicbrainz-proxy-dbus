@@ -69,12 +69,6 @@ class DbusAgent(AgentThreadedBase):
         self.srx=SignalRx(self)
            
         
-    def hq_test_track(self, ref, artist_name, track_name):
-        """
-        For testing purpose
-        """
-        self.pub("track?", ref, artist_name, track_name)
-        
     def h_tracks(self, source, ref, tracks):
         """
         Handler for the 'tracks' message

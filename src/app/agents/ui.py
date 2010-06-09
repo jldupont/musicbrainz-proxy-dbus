@@ -55,6 +55,7 @@ class UiWindow(gobject.GObject): #@UndefinedVariable
         self.hits=self.builder.get_object("lHitsData")
         self.misses=self.builder.get_object("lMissesData")
         self.notfound=self.builder.get_object("lNotFoundData")
+        self.filtered=self.builder.get_object("lFilteredData")
         self.retries_dropped=self.builder.get_object("lRetriesDroppedData")
 
         self.total_records=self.builder.get_object("lTotalRecordsData")
@@ -72,11 +73,16 @@ class UiWindow(gobject.GObject): #@UndefinedVariable
         self.cFailed = 0
         self.cNotFound = 0
         self.cRetriesDropped = 0
+        self.cFiltered=0
         
     def on_destroy(self, *_):
         mswitch.publish("__ui__", "__quit__")
         gtk.main_quit()
 
+    def h_filtered(self, *_):
+        self.cFiltered += 1
+        self.filtered.set_text(str(self.cFiltered))
+        
     def h_job_queue(self, depth):
         self.job_queue.set_text(str(depth))
 
@@ -112,7 +118,7 @@ class UiWindow(gobject.GObject): #@UndefinedVariable
         except: track_mbid=None
         
         if source=="mb":
-            if track is None or track_mbid is None:
+            if track is None or track_mbid is None or track_mbid=="":
                 self.cNotFound += 1
                 self.notfound.set_text(str(self.cNotFound))
                 return
