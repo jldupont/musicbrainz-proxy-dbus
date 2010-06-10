@@ -50,7 +50,7 @@ class MBAgent(AgentThreadedBase):
 
     QUEUE_SIZE=8192
     
-    RETRY_TIMEOUT=60*60*24
+    RETRY_TIMEOUT=60*60*24*5
     
     REFRESH_TIMEOUT=5
     
@@ -111,9 +111,9 @@ class MBAgent(AgentThreadedBase):
         #print "updated, now, delta: ", updated, now, delta
         
         if delta < self.RETRY_TIMEOUT:
-            artist_name=track.get("artist_name", "")
-            track_name=track.get("track_name", "")
-            self.pub("log", "Will retry later: artist(%s) track(%s)" % (artist_name, track_name))
+            #artist_name=track.get("artist_name", "")
+            #track_name=track.get("track_name", "")
+            ##self.pub("log", "Will retry later: artist(%s) track(%s)" % (artist_name, track_name))
             self.pub("mb_retry_dropped", ref, track)
             return
             

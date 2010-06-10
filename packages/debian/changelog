@@ -1,5 +1,5 @@
-musicbrainz-proxy-dbus (_VERSION_-2jldupont1~_DIST_1)  _DIST_; urgency=low
+musicbrainz-proxy-dbus (_VERSION_-1jldupont1~_DIST_1)  _DIST_; urgency=low
 
-  * v2.5: added "artist name" based filtering (common cases) & "filtered" statistics
+  * v2.6
  
- -- Jean-Lou Dupont <jl@jldupont.com>  Tue, 08 Jun 2010 07:17:00 -0500
+ -- Jean-Lou Dupont <jl@jldupont.com>  Wed, 09 Jun 2010 21:00:00 -0500

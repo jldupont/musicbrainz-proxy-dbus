@@ -100,7 +100,7 @@ class CacheAgent(AgentThreadedBase):
         
         ## perform filtering phase
         if filterArtist(artist_name):
-            self.pub("log", "warning", "Filtered artist(%s) track(%s)" % (artist_name, track_name))
+            ##self.pub("log", "warning", "Filtered artist(%s) track(%s)" % (artist_name, track_name))
             self.pub("filtered", artist_name, track_name)
             return
         
