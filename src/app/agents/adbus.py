@@ -39,14 +39,14 @@ class SignalRx(dbus.service.Object):
     def Tracks(self, source, ref, list_dic):
         pass
 
-
-    def sQTrack(self, ref, artist_name, track_name):
+    def sQTrack(self, ref, artist_name, track_name, priority):
         """
         DBus signal handler - /Tracks/qTrack
         
         @param ref: string - an opaque "reference"
         @param artist_name: string
         @param track_name:  string
+        @param priority:    string [low|high]
         
         @todo: better error handling
         """
@@ -55,7 +55,7 @@ class SignalRx(dbus.service.Object):
         try:    track=str(track_name)
         except: track=None
         
-        mswitch.publish(self.agent, "track?", ref, artist, track)
+        mswitch.publish(self.agent, "track?", ref, artist, track, priority)
 
 
 class DbusAgent(AgentThreadedBase):
@@ -68,13 +68,16 @@ class DbusAgent(AgentThreadedBase):
 
         self.srx=SignalRx(self)
            
-        
     def h_tracks(self, source, ref, tracks):
         """
         Handler for the 'tracks' message
         
         Sends back a message on DBus
         """
+        ## if the origin was "TrackInfo"
+        if source=="info":
+            return
+        
         if tracks is None:
             return
     

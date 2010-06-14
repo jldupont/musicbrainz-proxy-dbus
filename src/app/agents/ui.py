@@ -50,6 +50,8 @@ class UiWindow(gobject.GObject): #@UndefinedVariable
         self.window = self.builder.get_object("ui_window")
 
         self.reqin=self.builder.get_object("lRequestsData")
+        self.reqInfoData=self.builder.get_object("lRequestsInfoData")
+        
         self.reqdrop=self.builder.get_object("lRequestsDroppedData")
         self.mbfailed=self.builder.get_object("lMBFailedData")
         self.hits=self.builder.get_object("lHitsData")
@@ -61,12 +63,14 @@ class UiWindow(gobject.GObject): #@UndefinedVariable
         self.total_records=self.builder.get_object("lTotalRecordsData")
         self.records_mbid=self.builder.get_object("lRecordsWithMbidData")
         self.job_queue=self.builder.get_object("lJobQueueData")
-
+        self.job_info_queue=self.builder.get_object("lJobInfoQueueData")
+        
         self.window.connect("destroy-event", self.on_destroy)
         self.window.connect("destroy",       self.on_destroy)
         self.window.present()
         
         self.cRequestsIn = 0
+        self.cRequestsInfo = 0
         self.cRequestsDropped = 0
         self.cHits = 0
         self.cMisses = 0
@@ -83,19 +87,24 @@ class UiWindow(gobject.GObject): #@UndefinedVariable
         self.cFiltered += 1
         self.filtered.set_text(str(self.cFiltered))
         
-    def h_job_queue(self, depth):
-        self.job_queue.set_text(str(depth))
+    def h_job_queues(self, todo, info):
+        self.job_queue.set_text(str(todo))
+        self.job_info_queue.set_text(str(info))
 
     def h_cache_stats(self, ctotal_records, ctotal_records_mbid):
         self.total_records.set_text(str(ctotal_records))
         self.records_mbid.set_text(str(ctotal_records_mbid))
 
-    def hq_track(self, *_):
+    def hq_track(self, ref, _artist, _track, priority):
         """
         For computing the 'requests in' counter
         """
-        self.cRequestsIn += 1
-        self.reqin.set_text(str(self.cRequestsIn))
+        if priority=="low":
+            self.cRequestsInfo += 1
+            self.reqInfoData.set_text(str(self.cRequestsInfo))
+        else:
+            self.cRequestsIn += 1
+            self.reqin.set_text(str(self.cRequestsIn))
 
     def h_mb_queue_full(self, *_):
         """

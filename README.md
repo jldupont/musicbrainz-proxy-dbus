@@ -5,7 +5,7 @@ This application provides a proxy service over Dbus for retrieving the 'track mb
 DBus
 ====
 
-The input signal is:
+The input signals are:
 
 * interface: 'com.jldupont.musicbrainz.proxy'
 * path: 'Tracks'
@@ -13,6 +13,10 @@ The input signal is:
   * param 1: ref: an opaque string that serves to identify the request
   * param 2: artist: string
   * param 3: title: string
+  * param 4: priority: string ["low" | "high"]
+
+This signal is used to 'request' information for a specific track.
+When "priority=low",  this signal is used to 'prime up' the cache i.e. the requests will be put in the 'low priority' queue.  
   
 The resulting output signal if the track is either found in the cache or through the Musicbrainz webservice:
 
@@ -70,6 +74,7 @@ History
    - increased retry-timeout for tracks not found to 5days
    - removed "retry later" log message
    - removed" filtered" log message
-   
+ - v2.7: added "priority" option for qTrack Dbus signal
+ - v2.8: fixed corner case bug
 
 [Home](http://www.systemical.com/ "Home")

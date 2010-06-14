@@ -81,7 +81,7 @@ class CacheAgent(AgentThreadedBase):
         self.pub("cache_stats", total_records, total_records_mbid)
         
         
-    def hq_track(self, ref, artist_name, track_name):
+    def hq_track(self, ref, artist_name, track_name, priority):
         """
         Question: 'track?'
         """
@@ -115,9 +115,8 @@ class CacheAgent(AgentThreadedBase):
         track_mbid=track.get("track_mbid", "")
         
         ## only one result unfortunately...
-        ## changed in 2.3
         if track_mbid is None or track_mbid=="":
-            self.pub("cache_miss", ref, track)
+            self.pub("cache_miss", ref, track, priority)
             return
         
         ## maybe we'll get lucky and pull more tracks

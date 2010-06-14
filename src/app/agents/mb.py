@@ -16,11 +16,11 @@
     @date: May 29, 2010
 """
 import time
-import copy
+import copy                          
 from Queue import Queue, Empty, Full
 
-import musicbrainz2.webservice as ws #@UnresolvedImport
-import musicbrainz2.utils as u       #@UnresolvedImport
+import musicbrainz2.webservice as ws
+import musicbrainz2.utils as u       
 
 from app.system.base import AgentThreadedBase
 
@@ -48,7 +48,8 @@ class MBQuery(object):
 
 class MBAgent(AgentThreadedBase):
 
-    QUEUE_SIZE=8192
+    QUEUE_TODO_SIZE=256
+    QUEUE_INFO_SIZE=8192
     
     RETRY_TIMEOUT=60*60*24*5
     
@@ -57,10 +58,11 @@ class MBAgent(AgentThreadedBase):
     def __init__(self):
         AgentThreadedBase.__init__(self)
 
-        self.qtodo=Queue(self.QUEUE_SIZE)
+        self.qinfo=Queue(self.QUEUE_INFO_SIZE)
+        self.qtodo=Queue(self.QUEUE_TODO_SIZE)
         self.refresh_count=0
 
-    ## ================================================================== HANDLERS
+    ## ================================================================== HANDLERS           
 
     def h_tick(self, _ticks_second, tick_second):
         """
@@ -77,11 +79,19 @@ class MBAgent(AgentThreadedBase):
         if self.refresh_count > self.REFRESH_TIMEOUT:
             self.refresh_count=0
             self._doRefresh()
-        
+
+        ## First, we need to do the 'high priority' requests
         try:
             (ref, track)=self.qtodo.get(block=False)
         except Empty:
             track=None
+        
+        ## Next, we check for 'low priority' requests
+        if track is None:
+            try:
+                (ref, track)=self.qinfo.get(block=False)
+            except Empty:
+                track=None
             
         ## nothing todo!
         if track is None:
@@ -91,9 +101,9 @@ class MBAgent(AgentThreadedBase):
         self.pub("tracks", "mb", ref, [btrack])
         
     def _doRefresh(self):
-        self.pub("job_queue", self.qtodo.qsize())
+        self.pub("job_queues", self.qtodo.qsize(), self.qinfo.qsize())
 
-    def h_cache_miss(self, ref, track):
+    def h_cache_miss(self, ref, track, priority):
         """
         Handler for the 'cache_miss' message
     
@@ -117,12 +127,15 @@ class MBAgent(AgentThreadedBase):
             self.pub("mb_retry_dropped", ref, track)
             return
             
-        ctrack=copy.deepcopy(track)
+        #ctrack=copy.deepcopy(track)
         
         try:
-            self.qtodo.put((ref, ctrack), block=False)
+            if priority=="low":
+                self.qinfo.put((ref, track), block=False)
+            else:
+                self.qtodo.put((ref, track), block=False)
         except Full:
-            self.pub("mb_queue_full", (ref, ctrack))
+            self.pub("mb_queue_full", (ref, track))
         
     
     ## ================================================================== PRIVATE
