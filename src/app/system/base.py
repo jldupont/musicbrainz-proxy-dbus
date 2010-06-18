@@ -1,12 +1,17 @@
 """
-    Basic definition of a threaded agent
+    Base class for threaded Agents
+    
+    * high/low priority message queues
+    * message bursting controlled
+    * message dispatching based on Agent 'interest'
     
     @author: jldupont
     @date: May 17, 2010
+    @revised: June 18, 2010
 """
 
 from threading import Thread
-from Queue import Queue
+from Queue import Queue, Empty
 import uuid
 
 import mswitch
@@ -26,10 +31,12 @@ def mdispatch(obj, obj_orig, envelope):
     
     ## Avoid sending to self
     if orig == obj_orig:
-        return
+        return (False, mtype, None)
 
     if mtype=="__quit__":
-        return True
+        return (True, mtype, None)
+
+    handled=False
 
     if mtype.endswith("?"):
         handlerName="hq_%s" % mtype[:-1]
@@ -41,27 +48,33 @@ def mdispatch(obj, obj_orig, envelope):
         handler=getattr(obj, "h_default", None)    
         if handler is not None:
             handler(mtype, msg, *pargs, **kargs)
+            handled=True
     else:
-        try:
-            handler(msg, *pargs, **kargs)
-        except TypeError, e:
-            raise RuntimeError("Invalid handler for mtype(%s) in obj(%s): %s" % (mtype, str(obj), e))
+        handler(msg, *pargs, **kargs)
+        handled=True
 
     if handler is None:
         if debug:
             print "! No handler for message-type: %s" % mtype
     
-    return False
+    return (False, mtype, handled)
 
 
 class AgentThreadedBase(Thread):
+    """
+    Base class for Agent running in a 'thread' 
+    """
+    
+    LOW_PRIORITY_BURST_SIZE=5
     
     def __init__(self, debug=False):
         Thread.__init__(self)
+        self.mmap={}
         
         self.debug=debug
         self.id = uuid.uuid1()
         self.iq = Queue()
+        self.isq= Queue()
         
     def pub(self, msgType, msg, *pargs, **kargs):
         mswitch.publish(self.id, msgType, msg, *pargs, **kargs)
@@ -72,17 +85,60 @@ class AgentThreadedBase(Thread):
         """
         ## subscribe this agent to all
         ## the messages of the switch
-        mswitch.subscribe(self.iq)
+        mswitch.subscribe(self.iq, self.isq)
         
         while True:
-            envelope=self.iq.get(block=True)
-            quit=mdispatch(self, self.id, envelope)
-            if quit:
-                shutdown_handler=getattr(self, "h_shutdown", None)
-                if shutdown_handler is not None:
-                    shutdown_handler()
-                break
-                    
+            while True:
+                try:
+                    envelope=self.isq.get(block=False)
+                    quit=self._process(envelope)
+                    if quit:
+                        return
+                    continue
+                except Empty:
+                    break
+                
+
+            burst=self.LOW_PRIORITY_BURST_SIZE
+            while True:                
+                try:
+                    envelope=self.iq.get(block=True, timeout=0.1)
+                    quit=self._process(envelope)
+                    if quit:
+                        return
+
+                    burst -= 1
+                    if burst == 0:
+                        break
+                except Empty:
+                    pass
+                
+    def _process(self, envelope):
+        mtype, _payload = envelope
+        
+        interested=self.mmap.get(mtype, None)
+        if interested==False:
+            return False
+        
+        quit, _mtype, handled=mdispatch(self, self.id, envelope)
+        if quit:
+            shutdown_handler=getattr(self, "h_shutdown", None)
+            if shutdown_handler is not None:
+                shutdown_handler()
+
+        self.mmap[mtype]=handled
+            
+        ### signal this Agent's interest status (True/False)
+        ### to the central message switch
+        if interested is None:
+            mswitch.publish(self.__class__, "__interest__", (mtype, handled, self.iq))
+            
+        ### This debug info is extermely low overhead... keep it.
+        if interested is None and handled:
+            print "Agent(%s) interested(%s)" % (self.__class__, mtype)
+
+        return quit
+            
 
 
 ## ============================================================

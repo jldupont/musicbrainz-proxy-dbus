@@ -42,7 +42,9 @@ class UiWindow(gobject.GObject): #@UndefinedVariable
         gobject.GObject.__init__(self) #@UndefinedVariable
 
         self.iq=Queue()
-        mswitch.subscribe(self.iq)
+        self.isq=Queue()
+        
+        mswitch.subscribe(self.iq, self.isq)
         self.tick_count=0
 
         self.builder = gtk.Builder()
@@ -166,10 +168,30 @@ class UiWindow(gobject.GObject): #@UndefinedVariable
         
         while True:
             try:     
-                envelope=self.iq.get(False)
-                mdispatch(self, "__main__", envelope)
+                envelope=self.isq.get(False)
+                quit, mtype, handled=mdispatch(self, "__main__", envelope)
+                if handled==False:
+                    mswitch.publish(self.__class__, "__interest__", (mtype, False, self.isq))
             except Empty:
                 break
+            continue            
+        
+        burst=5
+        
+        while True:
+            try:     
+                envelope=self.iq.get(False)
+                quit, mtype, handled=mdispatch(self, "__main__", envelope)
+                if handled==False:
+                    mswitch.publish(self.__class__, "__interest__", (mtype, False, self.iq))
+                    
+                burst -= 1
+                if burst == 0:
+                    break
+            except Empty:
+                break
+            
+            continue
 
         return True
 
