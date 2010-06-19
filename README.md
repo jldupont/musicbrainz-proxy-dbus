@@ -77,5 +77,6 @@ History
  - v2.7: added "priority" option for qTrack Dbus signal
  - v2.8: fixed corner case bug
  - v2.9: significant speed increase by optimizing the central message switch with priorities, controlled bursting, filtering based on 'agent interest'
+ - v2.10: fixed shutdown process
 
 [Home](http://www.systemical.com/ "Home")

@@ -43,7 +43,8 @@ class BasicSwitch(Thread):
         """
         Main loop
         """
-        while True:
+        quit=False
+        while not quit:
             while True:
                 
                 ### There should be only a low volume/frequency
@@ -62,7 +63,7 @@ class BasicSwitch(Thread):
                     ## all threads to exit before
                     ## committing "hara-kiri"
                     if mtype=="__quit__":
-                        return
+                        quit=True
 
                     ## high priority messages are processed until
                     ## exhaustion
@@ -77,15 +78,15 @@ class BasicSwitch(Thread):
                     ## normal priority queue            
                     envelope=self.iq.get(block=True, timeout=0.1)
                     mtype, payload=envelope
-                    if mtype=="__quit__":
-                        return
-                    
                     if mtype=="__sub__":
                         q, sq=payload
                         self.do_sub(q, sq)
                     else:
                         self.do_pub(mtype, payload)
-                        
+
+                    if mtype=="__quit__":
+                        quit=True
+                                            
                     #if mtype != "tick":
                     #    print "mswitch: mtype(%s)" % mtype
                     
@@ -96,6 +97,8 @@ class BasicSwitch(Thread):
                         break
                 except Empty:
                     break
+        
+        print "mswitch - shutdown"
         
     def do_interest(self, payload):
         """
@@ -127,13 +130,16 @@ class BasicSwitch(Thread):
                     print "agent(%s) not interested mtype(%s)" % (str(q), mtype)
                     self.rmap[(q, mtype)]=True
             """
-             
+            #if mtype!="tick":
+            #    print "<<< do_pub: mtype(%s) q(%s) sq(%s)" % (mtype, q, sq)
             ### Agent notified interest OR not sure yet            
             if interest==True or interest==None:
                 if mtype.startswith("__"):
-                    sq.put((mtype, payload))
+                    sq.put((mtype, payload), block=False)
                 else:
-                    q.put((mtype, payload))
+                    q.put((mtype, payload), block=False)
+            #if mtype!="tick":                    
+            #    print ">>> do_pub: mtype(%s) q(%s) sq(%s)" % (mtype, q, sq)
     
 
 
@@ -142,15 +148,15 @@ class BasicSwitch(Thread):
 ## =============================================================== 
         
 
-def publish(orig, msgType, msg, *pargs, **kargs):
+def publish(orig, msgType, msg=None, *pargs, **kargs):
     """
     Publish a 'message' of type 'msgType' to
     all registered 'clients'
     """
     if msgType.startswith("__"):
-        _switch.isq.put((msgType, (orig, msg, pargs, kargs)))
+        _switch.isq.put((msgType, (orig, msg, pargs, kargs)), block=False)
     else:
-        _switch.iq.put((msgType, (orig, msg, pargs, kargs)))
+        _switch.iq.put((msgType, (orig, msg, pargs, kargs)), block=False)
     
     
 def subscribe(q, sq, _msgType=None):

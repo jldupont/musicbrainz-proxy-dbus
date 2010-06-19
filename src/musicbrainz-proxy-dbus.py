@@ -16,6 +16,7 @@ if os.path.exists(ppkg):
 import gobject
 import dbus.glib
 from dbus.mainloop.glib import DBusGMainLoop
+import gtk
 
 gobject.threads_init()
 dbus.glib.init_threads()
@@ -29,5 +30,4 @@ from app.agents import mb
 from app.agents import logger
 from app.agents import ui
 
-import gtk
 gtk.main()
