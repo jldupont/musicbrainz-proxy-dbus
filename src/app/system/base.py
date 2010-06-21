@@ -83,6 +83,8 @@ class AgentThreadedBase(Thread):
         """
         Main Loop
         """
+        print "Agent (%s) starting" % str(self.__class__)
+        
         ## subscribe this agent to all
         ## the messages of the switch
         mswitch.subscribe(self.iq, self.isq)
@@ -116,7 +118,7 @@ class AgentThreadedBase(Thread):
                         break
                 except Empty:
                     break
-        print str(self.__class__) + " - shutdown"
+        print "Agent(%s) ending" % str(self.__class__)
                 
     def _process(self, envelope):
         mtype, _payload = envelope
@@ -134,7 +136,8 @@ class AgentThreadedBase(Thread):
             if shutdown_handler is not None:
                 shutdown_handler()
 
-        self.mmap[mtype]=handled
+        if handled is not None:
+            self.mmap[mtype]=handled
             
         ### signal this Agent's interest status (True/False)
         ### to the central message switch
@@ -145,6 +148,7 @@ class AgentThreadedBase(Thread):
         ### This debug info is extermely low overhead... keep it.
         if interested is None and handled:
             print "Agent(%s) interested(%s)" % (self.__class__, mtype)
+            print "Agent(%s) map: %s" % (self.__class__, self.mmap)
 
         return quit
             
