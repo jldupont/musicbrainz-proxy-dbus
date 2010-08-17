@@ -24,19 +24,13 @@ import os
 import gobject
 import gtk
 from Queue import Queue, Empty
+import webbrowser
 
 #from Queue import Queue, Empty
         
 from   app.system.base import mdispatch
 import app.system.mswitch as mswitch
 
-path=os.path.dirname(__file__)
-glade_file=path+"/ui.glade"
-        
-TIME_BASE=250  ##milliseconds
-TICKS_SECOND=1000/TIME_BASE
-
-       
 class UiWindow(object): #@UndefinedVariable
     
     CONTROLS=["lRequestsData",
@@ -54,7 +48,9 @@ class UiWindow(object): #@UndefinedVariable
               "lJobInfoQueueData"
               ]
     
-    def __init__(self, glade_file):
+    def __init__(self, glade_file, help_url):
+        self.help_url=help_url
+        
         self.builder = gtk.Builder()
         self.builder.add_from_file(glade_file)
         self.window = self.builder.get_object("ui_window")
@@ -62,16 +58,22 @@ class UiWindow(object): #@UndefinedVariable
         for ctl in self.CONTROLS:
             self.__dict__[ctl]=self.builder.get_object(ctl)
         
+        self.bHelp=self.builder.get_object("bHelp")
+        self.bHelp.connect("clicked", self.on_help)
+        
         self.window.connect("destroy-event", self.do_destroy)
         self.window.connect("destroy",       self.do_destroy)
         self.window.present()
+        
+    def on_help(self, *_):
+        webbrowser.open(self.help_url)
         
     def do_destroy(self, *_):
         mswitch.publish(self, "app_close")
         
     def updateAll(self, data):
         for ctl, value in data.iteritems():
-            ctl.set_text(str(value))
+            self.__dict__[ctl].set_text(str(value))
         
     def update(self, param, value):
         ctl=self.__dict__[param]
@@ -85,14 +87,19 @@ class UiWindow(object): #@UndefinedVariable
 
     
 class UiAgent(object):
-    def __init__(self, glade_file):
+    def __init__(self, help_url, ticks_seconds):
+        self.ticks_seconds=ticks_seconds
+        
+        path=os.path.dirname(__file__)
+        self.glade_file=path+"/ui.glade"       
+        
+        self.help_url=help_url
         self.iq=Queue()
         self.isq=Queue()
         
         mswitch.subscribe(self.iq, self.isq)
         self.tick_count=0
         self.window=None
-        self.glade_file=glade_file
         
         self.data={}
 
@@ -100,7 +107,7 @@ class UiAgent(object):
         """ We should show the main application window
         """
         if self.window is None:
-            self.window=UiWindow(glade_file)
+            self.window=UiWindow(self.glade_file, self.help_url)
             self.window.updateAll(self.data)
 
     def h_app_close(self, *_):
@@ -191,12 +198,12 @@ class UiAgent(object):
         Performs message dispatch
         """
         
-        tick_second = (self.tick_count % TICKS_SECOND) == 0 
+        tick_second = (self.tick_count % self.ticks_seconds) == 0 
         self.tick_count += 1
         
         #print "tick! ", tick_second
         
-        mswitch.publish("__main__", "tick", TICKS_SECOND, tick_second)
+        mswitch.publish("__main__", "tick", self.ticks_seconds, tick_second)
         
         while True:
             try:     
@@ -232,8 +239,8 @@ class UiAgent(object):
 
         return True
     
-        
-ui=UiAgent(glade_file)
+"""
+ui=UiAgent(HELP_URL, TICKS_SECONDS)
 gobject.timeout_add(TIME_BASE, ui.tick)
-
+"""
 

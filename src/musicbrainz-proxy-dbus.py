@@ -11,6 +11,10 @@ ICON_PATH="/usr/share/icons/"
 ICON_FILE="musicbrainz-proxy-dbus.png"
 LOG_PATH="~/musicbrainz-proxy-dbus.log"
 DB_PATH ="~/musicbrainz-proxy-dbus.sqlite"
+HELP_URL="http://www.systemical.com/doc/opensource/musicbrainz-proxy-dbus"
+TIME_BASE=250  ##milliseconds
+TICKS_SECOND=1000/TIME_BASE
+       
 
 import os
 import sys
@@ -46,6 +50,11 @@ _ca.start()
 
 from app.agents import adbus
 from app.agents import mb
-from app.agents import ui
+
+from app.agents.ui import UiAgent
+ui=UiAgent(HELP_URL, TICKS_SECOND)
+gobject.timeout_add(TIME_BASE, ui.tick)
+
+
 
 gtk.main()
