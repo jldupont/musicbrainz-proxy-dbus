@@ -6,7 +6,7 @@ PRJ=musicbrainz_proxy_dbus
 VERSION:=`cat VERSION`
 DATE=`date +'%a, %d %B %Y %T %z'`
 
-DEFAULT_DISTRO=karmic
+DEFAULT_DISTRO=lucid
 
 ifeq ($(DIST),)
 	DIST=${DEFAULT_DISTRO}

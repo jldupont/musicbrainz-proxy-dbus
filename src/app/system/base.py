@@ -83,7 +83,7 @@ class AgentThreadedBase(Thread):
         """
         Main Loop
         """
-        print "Agent (%s) starting" % str(self.__class__)
+        print "Agent(%s) starting" % str(self.__class__)
         
         ## subscribe this agent to all
         ## the messages of the switch

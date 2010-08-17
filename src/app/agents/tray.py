@@ -15,12 +15,12 @@ class AppPopupMenu:
     def __init__(self, app):
         self.item_exit = gtk.MenuItem( "exit", True)
         self.item_show = gtk.MenuItem( "show", True)
+        self.item_show.connect( 'activate', app.show)        
         self.item_exit.connect( 'activate', app.exit)
-        self.item_show.connect( 'activate', app.show)
 
         self.menu = gtk.Menu()
-        self.menu.append( self.item_exit)
         self.menu.append( self.item_show)
+        self.menu.append( self.item_exit)        
         self.menu.show_all()
 
     def show_menu(self, button, time):
@@ -71,9 +71,11 @@ class TrayAgent(object):
         self.popup_menu.show_menu(button, time)
 
     def show(self, *_):
-        mswitch.publish(self, "app_show")
+        print "menu: show"
+        mswitch.publish(self, "__show__")
 
     def exit(self, *p):
+        print "menu: exit"
         mswitch.publish(self, "__quit__")
 
 

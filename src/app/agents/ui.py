@@ -21,7 +21,6 @@
     @date: May 28, 2010
 """
 import os
-import gobject
 import gtk
 from Queue import Queue, Empty
 import webbrowser
@@ -66,10 +65,12 @@ class UiWindow(object): #@UndefinedVariable
         self.window.present()
         
     def on_help(self, *_):
+        print "ui.window: help"
         webbrowser.open(self.help_url)
         
     def do_destroy(self, *_):
-        mswitch.publish(self, "app_close")
+        print "ui.window: destroy"
+        mswitch.publish(self, "__destroy__")
         
     def updateAll(self, data):
         for ctl, value in data.iteritems():
@@ -103,16 +104,23 @@ class UiAgent(object):
         
         self.data={}
 
-    def h_app_show(self, *_):
+    def h___show__(self, *_):
         """ We should show the main application window
         """
+        print "ui.agent: show"
         if self.window is None:
+            print "ui.agent: create window"
             self.window=UiWindow(self.glade_file, self.help_url)
-            self.window.updateAll(self.data)
+        try:  self.window.updateAll(self.data)
+        except:
+            print "ui.agent: show: retry"
+            self.window=None
+            self.pub("__show__")
 
-    def h_app_close(self, *_):
+    def h___destroy__(self, *_):
         """ Seems that the application window was closed...
         """
+        print "ui.agent: destroy"
         self.window=None
 
 
@@ -137,7 +145,6 @@ class UiAgent(object):
             self.window.update("lRecordsWithMbidData", ctotal_records_mbid)
         except: pass
         
-
     def hq_track(self, ref, _artist, _track, priority):
         if priority=="low":
             self._iu("lRequestsInfoData") 

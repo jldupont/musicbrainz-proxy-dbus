@@ -80,5 +80,6 @@ History
  - v2.10: fixed shutdown process
  - v2.11: minor fix in AgentThreadedBase
  - v2.20: added 'help' button and tray icon
+ - v2.22: bumped priority of "show" system event
 
 [Home](http://www.systemical.com/ "Home")
