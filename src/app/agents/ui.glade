@@ -4,312 +4,350 @@
   <!-- interface-naming-policy project-wide -->
   <object class="GtkWindow" id="ui_window">
     <child>
-      <object class="GtkTable" id="table2">
+      <object class="GtkVBox" id="vbox1">
         <property name="visible">True</property>
-        <property name="n_rows">15</property>
-        <property name="n_columns">2</property>
         <child>
-          <object class="GtkLabel" id="lRequests">
+          <object class="GtkTable" id="table2">
             <property name="visible">True</property>
-            <property name="xpad">5</property>
-            <property name="label" translatable="yes">Requests In:</property>
+            <property name="n_rows">15</property>
+            <property name="n_columns">2</property>
+            <child>
+              <object class="GtkLabel" id="lRequests">
+                <property name="visible">True</property>
+                <property name="xpad">5</property>
+                <property name="label" translatable="yes">Requests In:</property>
+              </object>
+              <packing>
+                <property name="x_options"></property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkLabel" id="lRequestsData">
+                <property name="visible">True</property>
+                <property name="xpad">1</property>
+                <property name="ellipsize">start</property>
+                <property name="width_chars">8</property>
+              </object>
+              <packing>
+                <property name="left_attach">1</property>
+                <property name="right_attach">2</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkLabel" id="label2">
+                <property name="visible">True</property>
+                <property name="label" translatable="yes">Job Info Queue:</property>
+              </object>
+              <packing>
+                <property name="top_attach">14</property>
+                <property name="bottom_attach">15</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkLabel" id="lJobInfoQueueData">
+                <property name="visible">True</property>
+              </object>
+              <packing>
+                <property name="left_attach">1</property>
+                <property name="right_attach">2</property>
+                <property name="top_attach">14</property>
+                <property name="bottom_attach">15</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkLabel" id="lJobQueue">
+                <property name="visible">True</property>
+                <property name="label" translatable="yes">Job Queue:</property>
+              </object>
+              <packing>
+                <property name="top_attach">13</property>
+                <property name="bottom_attach">14</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkLabel" id="lJobQueueData">
+                <property name="visible">True</property>
+              </object>
+              <packing>
+                <property name="left_attach">1</property>
+                <property name="right_attach">2</property>
+                <property name="top_attach">13</property>
+                <property name="bottom_attach">14</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkHSeparator" id="hseparator2">
+                <property name="visible">True</property>
+              </object>
+              <packing>
+                <property name="top_attach">12</property>
+                <property name="bottom_attach">13</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkLabel" id="lRecordsWithMbid">
+                <property name="visible">True</property>
+                <property name="label" translatable="yes">Records with Mbid:</property>
+              </object>
+              <packing>
+                <property name="top_attach">11</property>
+                <property name="bottom_attach">12</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkLabel" id="lRecordsWithMbidData">
+                <property name="visible">True</property>
+              </object>
+              <packing>
+                <property name="left_attach">1</property>
+                <property name="right_attach">2</property>
+                <property name="top_attach">11</property>
+                <property name="bottom_attach">12</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkLabel" id="lTotalRecords">
+                <property name="visible">True</property>
+                <property name="label" translatable="yes">Total Records:</property>
+              </object>
+              <packing>
+                <property name="top_attach">10</property>
+                <property name="bottom_attach">11</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkLabel" id="lTotalRecordsData">
+                <property name="visible">True</property>
+              </object>
+              <packing>
+                <property name="left_attach">1</property>
+                <property name="right_attach">2</property>
+                <property name="top_attach">10</property>
+                <property name="bottom_attach">11</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkHSeparator" id="hseparator1">
+                <property name="visible">True</property>
+              </object>
+              <packing>
+                <property name="top_attach">9</property>
+                <property name="bottom_attach">10</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkLabel" id="label1">
+                <property name="visible">True</property>
+                <property name="label" translatable="yes">Retries dropped:</property>
+              </object>
+              <packing>
+                <property name="top_attach">8</property>
+                <property name="bottom_attach">9</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkLabel" id="lRetriesDroppedData">
+                <property name="visible">True</property>
+              </object>
+              <packing>
+                <property name="left_attach">1</property>
+                <property name="right_attach">2</property>
+                <property name="top_attach">8</property>
+                <property name="bottom_attach">9</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkLabel" id="lFiltered">
+                <property name="visible">True</property>
+                <property name="label" translatable="yes">Filtered:</property>
+              </object>
+              <packing>
+                <property name="top_attach">7</property>
+                <property name="bottom_attach">8</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkLabel" id="lFilteredData">
+                <property name="visible">True</property>
+              </object>
+              <packing>
+                <property name="left_attach">1</property>
+                <property name="right_attach">2</property>
+                <property name="top_attach">7</property>
+                <property name="bottom_attach">8</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkLabel" id="lNotFound">
+                <property name="visible">True</property>
+                <property name="label" translatable="yes">Not found:</property>
+              </object>
+              <packing>
+                <property name="top_attach">6</property>
+                <property name="bottom_attach">7</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkLabel" id="lNotFoundData">
+                <property name="visible">True</property>
+              </object>
+              <packing>
+                <property name="left_attach">1</property>
+                <property name="right_attach">2</property>
+                <property name="top_attach">6</property>
+                <property name="bottom_attach">7</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkLabel" id="lMBFailed">
+                <property name="visible">True</property>
+                <property name="xpad">5</property>
+                <property name="label" translatable="yes">Failed calls:</property>
+              </object>
+              <packing>
+                <property name="top_attach">5</property>
+                <property name="bottom_attach">6</property>
+                <property name="x_options">GTK_EXPAND</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkLabel" id="lMBFailedData">
+                <property name="visible">True</property>
+              </object>
+              <packing>
+                <property name="left_attach">1</property>
+                <property name="right_attach">2</property>
+                <property name="top_attach">5</property>
+                <property name="bottom_attach">6</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkLabel" id="lMisses">
+                <property name="visible">True</property>
+                <property name="xpad">5</property>
+                <property name="label" translatable="yes">Misses:</property>
+              </object>
+              <packing>
+                <property name="top_attach">4</property>
+                <property name="bottom_attach">5</property>
+                <property name="x_options">GTK_EXPAND</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkLabel" id="lMissesData">
+                <property name="visible">True</property>
+              </object>
+              <packing>
+                <property name="left_attach">1</property>
+                <property name="right_attach">2</property>
+                <property name="top_attach">4</property>
+                <property name="bottom_attach">5</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkLabel" id="lHits">
+                <property name="visible">True</property>
+                <property name="xpad">5</property>
+                <property name="label" translatable="yes">Hits:</property>
+              </object>
+              <packing>
+                <property name="top_attach">3</property>
+                <property name="bottom_attach">4</property>
+                <property name="x_options">GTK_EXPAND</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkLabel" id="lHitsData">
+                <property name="visible">True</property>
+              </object>
+              <packing>
+                <property name="left_attach">1</property>
+                <property name="right_attach">2</property>
+                <property name="top_attach">3</property>
+                <property name="bottom_attach">4</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkLabel" id="lRequestsDropped">
+                <property name="visible">True</property>
+                <property name="label" translatable="yes">Requests dropped:</property>
+              </object>
+              <packing>
+                <property name="top_attach">2</property>
+                <property name="bottom_attach">3</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkLabel" id="lRequestsDroppedData">
+                <property name="visible">True</property>
+              </object>
+              <packing>
+                <property name="left_attach">1</property>
+                <property name="right_attach">2</property>
+                <property name="top_attach">2</property>
+                <property name="bottom_attach">3</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkLabel" id="label3">
+                <property name="visible">True</property>
+                <property name="label" translatable="yes">Request Info:</property>
+              </object>
+              <packing>
+                <property name="top_attach">1</property>
+                <property name="bottom_attach">2</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkLabel" id="lRequestsInfoData">
+                <property name="visible">True</property>
+              </object>
+              <packing>
+                <property name="left_attach">1</property>
+                <property name="right_attach">2</property>
+                <property name="top_attach">1</property>
+                <property name="bottom_attach">2</property>
+              </packing>
+            </child>
+            <child>
+              <placeholder/>
+            </child>
+            <child>
+              <placeholder/>
+            </child>
           </object>
           <packing>
-            <property name="x_options"></property>
+            <property name="position">0</property>
           </packing>
         </child>
         <child>
-          <object class="GtkLabel" id="lRequestsData">
+          <object class="GtkHSeparator" id="hseparator3">
             <property name="visible">True</property>
-            <property name="xpad">1</property>
-            <property name="ellipsize">start</property>
-            <property name="width_chars">8</property>
           </object>
           <packing>
-            <property name="left_attach">1</property>
-            <property name="right_attach">2</property>
+            <property name="expand">False</property>
+            <property name="position">1</property>
           </packing>
         </child>
         <child>
-          <object class="GtkLabel" id="label2">
+          <object class="GtkHButtonBox" id="hbuttonbox1">
             <property name="visible">True</property>
-            <property name="label" translatable="yes">Job Info Queue:</property>
+            <child>
+              <object class="GtkButton" id="bHelp">
+                <property name="label" translatable="yes">Help</property>
+                <property name="visible">True</property>
+                <property name="can_focus">True</property>
+                <property name="receives_default">True</property>
+              </object>
+              <packing>
+                <property name="expand">False</property>
+                <property name="fill">False</property>
+                <property name="position">0</property>
+              </packing>
+            </child>
           </object>
           <packing>
-            <property name="top_attach">14</property>
-            <property name="bottom_attach">15</property>
-          </packing>
-        </child>
-        <child>
-          <object class="GtkLabel" id="lJobInfoQueueData">
-            <property name="visible">True</property>
-          </object>
-          <packing>
-            <property name="left_attach">1</property>
-            <property name="right_attach">2</property>
-            <property name="top_attach">14</property>
-            <property name="bottom_attach">15</property>
-          </packing>
-        </child>
-        <child>
-          <object class="GtkLabel" id="lJobQueue">
-            <property name="visible">True</property>
-            <property name="label" translatable="yes">Job Queue:</property>
-          </object>
-          <packing>
-            <property name="top_attach">13</property>
-            <property name="bottom_attach">14</property>
-          </packing>
-        </child>
-        <child>
-          <object class="GtkLabel" id="lJobQueueData">
-            <property name="visible">True</property>
-          </object>
-          <packing>
-            <property name="left_attach">1</property>
-            <property name="right_attach">2</property>
-            <property name="top_attach">13</property>
-            <property name="bottom_attach">14</property>
-          </packing>
-        </child>
-        <child>
-          <object class="GtkHSeparator" id="hseparator2">
-            <property name="visible">True</property>
-          </object>
-          <packing>
-            <property name="top_attach">12</property>
-            <property name="bottom_attach">13</property>
-          </packing>
-        </child>
-        <child>
-          <object class="GtkLabel" id="lRecordsWithMbid">
-            <property name="visible">True</property>
-            <property name="label" translatable="yes">Records with Mbid:</property>
-          </object>
-          <packing>
-            <property name="top_attach">11</property>
-            <property name="bottom_attach">12</property>
-          </packing>
-        </child>
-        <child>
-          <object class="GtkLabel" id="lRecordsWithMbidData">
-            <property name="visible">True</property>
-          </object>
-          <packing>
-            <property name="left_attach">1</property>
-            <property name="right_attach">2</property>
-            <property name="top_attach">11</property>
-            <property name="bottom_attach">12</property>
-          </packing>
-        </child>
-        <child>
-          <object class="GtkLabel" id="lTotalRecords">
-            <property name="visible">True</property>
-            <property name="label" translatable="yes">Total Records:</property>
-          </object>
-          <packing>
-            <property name="top_attach">10</property>
-            <property name="bottom_attach">11</property>
-          </packing>
-        </child>
-        <child>
-          <object class="GtkLabel" id="lTotalRecordsData">
-            <property name="visible">True</property>
-          </object>
-          <packing>
-            <property name="left_attach">1</property>
-            <property name="right_attach">2</property>
-            <property name="top_attach">10</property>
-            <property name="bottom_attach">11</property>
-          </packing>
-        </child>
-        <child>
-          <object class="GtkHSeparator" id="hseparator1">
-            <property name="visible">True</property>
-          </object>
-          <packing>
-            <property name="top_attach">9</property>
-            <property name="bottom_attach">10</property>
-          </packing>
-        </child>
-        <child>
-          <object class="GtkLabel" id="label1">
-            <property name="visible">True</property>
-            <property name="label" translatable="yes">Retries dropped:</property>
-          </object>
-          <packing>
-            <property name="top_attach">8</property>
-            <property name="bottom_attach">9</property>
-          </packing>
-        </child>
-        <child>
-          <object class="GtkLabel" id="lRetriesDroppedData">
-            <property name="visible">True</property>
-          </object>
-          <packing>
-            <property name="left_attach">1</property>
-            <property name="right_attach">2</property>
-            <property name="top_attach">8</property>
-            <property name="bottom_attach">9</property>
-          </packing>
-        </child>
-        <child>
-          <object class="GtkLabel" id="lFiltered">
-            <property name="visible">True</property>
-            <property name="label" translatable="yes">Filtered:</property>
-          </object>
-          <packing>
-            <property name="top_attach">7</property>
-            <property name="bottom_attach">8</property>
-          </packing>
-        </child>
-        <child>
-          <object class="GtkLabel" id="lFilteredData">
-            <property name="visible">True</property>
-          </object>
-          <packing>
-            <property name="left_attach">1</property>
-            <property name="right_attach">2</property>
-            <property name="top_attach">7</property>
-            <property name="bottom_attach">8</property>
-          </packing>
-        </child>
-        <child>
-          <object class="GtkLabel" id="lNotFound">
-            <property name="visible">True</property>
-            <property name="label" translatable="yes">Not found:</property>
-          </object>
-          <packing>
-            <property name="top_attach">6</property>
-            <property name="bottom_attach">7</property>
-          </packing>
-        </child>
-        <child>
-          <object class="GtkLabel" id="lNotFoundData">
-            <property name="visible">True</property>
-          </object>
-          <packing>
-            <property name="left_attach">1</property>
-            <property name="right_attach">2</property>
-            <property name="top_attach">6</property>
-            <property name="bottom_attach">7</property>
-          </packing>
-        </child>
-        <child>
-          <object class="GtkLabel" id="lMBFailed">
-            <property name="visible">True</property>
-            <property name="xpad">5</property>
-            <property name="label" translatable="yes">Failed calls:</property>
-          </object>
-          <packing>
-            <property name="top_attach">5</property>
-            <property name="bottom_attach">6</property>
-            <property name="x_options">GTK_EXPAND</property>
-          </packing>
-        </child>
-        <child>
-          <object class="GtkLabel" id="lMBFailedData">
-            <property name="visible">True</property>
-          </object>
-          <packing>
-            <property name="left_attach">1</property>
-            <property name="right_attach">2</property>
-            <property name="top_attach">5</property>
-            <property name="bottom_attach">6</property>
-          </packing>
-        </child>
-        <child>
-          <object class="GtkLabel" id="lMisses">
-            <property name="visible">True</property>
-            <property name="xpad">5</property>
-            <property name="label" translatable="yes">Misses:</property>
-          </object>
-          <packing>
-            <property name="top_attach">4</property>
-            <property name="bottom_attach">5</property>
-            <property name="x_options">GTK_EXPAND</property>
-          </packing>
-        </child>
-        <child>
-          <object class="GtkLabel" id="lMissesData">
-            <property name="visible">True</property>
-          </object>
-          <packing>
-            <property name="left_attach">1</property>
-            <property name="right_attach">2</property>
-            <property name="top_attach">4</property>
-            <property name="bottom_attach">5</property>
-          </packing>
-        </child>
-        <child>
-          <object class="GtkLabel" id="lHits">
-            <property name="visible">True</property>
-            <property name="xpad">5</property>
-            <property name="label" translatable="yes">Hits:</property>
-          </object>
-          <packing>
-            <property name="top_attach">3</property>
-            <property name="bottom_attach">4</property>
-            <property name="x_options">GTK_EXPAND</property>
-          </packing>
-        </child>
-        <child>
-          <object class="GtkLabel" id="lHitsData">
-            <property name="visible">True</property>
-          </object>
-          <packing>
-            <property name="left_attach">1</property>
-            <property name="right_attach">2</property>
-            <property name="top_attach">3</property>
-            <property name="bottom_attach">4</property>
-          </packing>
-        </child>
-        <child>
-          <object class="GtkLabel" id="lRequestsDropped">
-            <property name="visible">True</property>
-            <property name="label" translatable="yes">Requests dropped:</property>
-          </object>
-          <packing>
-            <property name="top_attach">2</property>
-            <property name="bottom_attach">3</property>
-          </packing>
-        </child>
-        <child>
-          <placeholder/>
-        </child>
-        <child>
-          <placeholder/>
-        </child>
-        <child>
-          <object class="GtkLabel" id="lRequestsDroppedData">
-            <property name="visible">True</property>
-          </object>
-          <packing>
-            <property name="left_attach">1</property>
-            <property name="right_attach">2</property>
-            <property name="top_attach">2</property>
-            <property name="bottom_attach">3</property>
-          </packing>
-        </child>
-        <child>
-          <object class="GtkLabel" id="label3">
-            <property name="visible">True</property>
-            <property name="label" translatable="yes">Request Info:</property>
-          </object>
-          <packing>
-            <property name="top_attach">1</property>
-            <property name="bottom_attach">2</property>
-          </packing>
-        </child>
-        <child>
-          <object class="GtkLabel" id="lRequestsInfoData">
-            <property name="visible">True</property>
-          </object>
-          <packing>
-            <property name="left_attach">1</property>
-            <property name="right_attach">2</property>
-            <property name="top_attach">1</property>
-            <property name="bottom_attach">2</property>
+            <property name="position">2</property>
           </packing>
         </child>
       </object>

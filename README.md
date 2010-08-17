@@ -79,5 +79,6 @@ History
  - v2.9: significant speed increase by optimizing the central message switch with priorities, controlled bursting, filtering based on 'agent interest'
  - v2.10: fixed shutdown process
  - v2.11: minor fix in AgentThreadedBase
+ - v2.20: added 'help' button and tray icon
 
 [Home](http://www.systemical.com/ "Home")

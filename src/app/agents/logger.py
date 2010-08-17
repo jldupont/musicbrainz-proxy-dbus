@@ -8,23 +8,17 @@ import os
 import logging
 from app.system.base    import AgentThreadedBase
 
-__all__=[]
-
-def getLogPath():
-    path="~/musicbrainz-proxy.log"
-    return os.path.expanduser(path)
+__all__=["LoggerAgent"]
 
 
 class LoggerAgent(AgentThreadedBase):
 
-    NAME="lastfmsqlite"
-    
     mlevel={"info":     logging.INFO
             ,"warning": logging.WARNING
             ,"error":   logging.ERROR
             }
     
-    def __init__(self):
+    def __init__(self, app_name, logpath):
         """
         @param interval: interval in seconds
         """
@@ -32,16 +26,17 @@ class LoggerAgent(AgentThreadedBase):
         self._logger=None
         self.fhdlr=None
         self._shutdown=False
-        self._setup()
+        self.appname=app_name
+        self.logpath=os.path.expanduser(logpath)
+        self._setup()        
         
     def _setup(self):
         if self._logger is not None:
             return
         
-        self._logger=logging.getLogger(self.NAME)
+        self._logger=logging.getLogger(self.appname)
         
-        _path=getLogPath()
-        path=os.path.expandvars(os.path.expanduser(_path))
+        path=os.path.expandvars(os.path.expanduser(self.logpath))
         self.fhdlr=logging.FileHandler(path)
         
         formatter = logging.Formatter('%(asctime)s %(levelname)s %(message)s')
@@ -68,6 +63,7 @@ class LoggerAgent(AgentThreadedBase):
         
 
 
-
+"""
 _=LoggerAgent()
 _.start()
+"""

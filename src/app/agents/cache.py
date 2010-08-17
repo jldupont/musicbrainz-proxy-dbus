@@ -19,7 +19,7 @@ import time
 from app.system.base import AgentThreadedBase
 from app.system.filter import filterArtist
 
-__all__=[]
+__all__=["CacheAgent"]
 
 
 FIELDS=["id", "created", "updated", 
@@ -44,10 +44,11 @@ class CacheAgent(AgentThreadedBase):
     
     REFRESH_TIMEOUT=10 ##seconds
     
-    def __init__(self):
+    def __init__(self, dbpath):
         AgentThreadedBase.__init__(self)
 
-        self.path=os.path.expanduser(self.DBPATH)
+        self.dbpath=dbpath
+        self.path=os.path.expanduser(self.dbpath)
         self.conn=sqlite3.connect(self.path, check_same_thread=False)
         self.c = self.conn.cursor()
         
@@ -267,6 +268,7 @@ class CacheAgent(AgentThreadedBase):
         
         return count
 
+"""
 _=CacheAgent()
 _.start()
-
+"""

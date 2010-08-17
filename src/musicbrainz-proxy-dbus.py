@@ -5,6 +5,13 @@
     @author: jldupont
     @date: May 28, 2010
 """
+APP_NAME="musicbrainz-proxy-dbus"
+APP_ICON = "musicbrainz-proxy-dbus"
+ICON_PATH="/usr/share/icons/"
+ICON_FILE="musicbrainz-proxy-dbus.png"
+LOG_PATH="~/musicbrainz-proxy-dbus.log"
+DB_PATH ="~/musicbrainz-proxy-dbus.sqlite"
+
 import os
 import sys
 
@@ -22,12 +29,23 @@ gobject.threads_init()
 dbus.glib.init_threads()
 DBusGMainLoop(set_as_default=True)
 
-
 from app.system import mswitch
+
+## ------------------------------
+## configurables
+from app.agents.tray import TrayAgent
+_ta=TrayAgent(APP_NAME, ICON_PATH, ICON_FILE)
+
+from app.agents.logger import LoggerAgent
+_la=LoggerAgent(APP_NAME, LOG_PATH)
+_la.start()
+
+from app.agents.cache import CacheAgent
+_ca=CacheAgent(DB_PATH)
+_ca.start()
+
 from app.agents import adbus
-from app.agents import cache
 from app.agents import mb
-from app.agents import logger
 from app.agents import ui
 
 gtk.main()

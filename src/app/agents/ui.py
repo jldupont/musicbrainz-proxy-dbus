@@ -35,89 +35,122 @@ glade_file=path+"/ui.glade"
         
 TIME_BASE=250  ##milliseconds
 TICKS_SECOND=1000/TIME_BASE
-        
-class UiWindow(gobject.GObject): #@UndefinedVariable
+
+       
+class UiWindow(object): #@UndefinedVariable
+    
+    CONTROLS=["lRequestsData",
+              "lRequestsInfoData",
+              "lRequestsDroppedData",
+              "lMBFailedData",
+              "lHitsData",
+              "lMissesData",
+              "lNotFoundData",
+              "lFilteredData",
+              "lRetriesDroppedData",
+              "lTotalRecordsData",
+              "lRecordsWithMbidData",
+              "lJobQueueData",
+              "lJobInfoQueueData"
+              ]
     
     def __init__(self, glade_file):
-        gobject.GObject.__init__(self) #@UndefinedVariable
+        self.builder = gtk.Builder()
+        self.builder.add_from_file(glade_file)
+        self.window = self.builder.get_object("ui_window")
 
+        for ctl in self.CONTROLS:
+            self.__dict__[ctl]=self.builder.get_object(ctl)
+        
+        self.window.connect("destroy-event", self.do_destroy)
+        self.window.connect("destroy",       self.do_destroy)
+        self.window.present()
+        
+    def do_destroy(self, *_):
+        mswitch.publish(self, "app_close")
+        
+    def updateAll(self, data):
+        for ctl, value in data.iteritems():
+            ctl.set_text(str(value))
+        
+    def update(self, param, value):
+        ctl=self.__dict__[param]
+        ctl.set_text(str(value))
+        
+
+
+### ================================================================================
+### ================================================================================
+
+
+    
+class UiAgent(object):
+    def __init__(self, glade_file):
         self.iq=Queue()
         self.isq=Queue()
         
         mswitch.subscribe(self.iq, self.isq)
         self.tick_count=0
+        self.window=None
+        self.glade_file=glade_file
+        
+        self.data={}
 
-        self.builder = gtk.Builder()
-        self.builder.add_from_file(glade_file)
-        self.window = self.builder.get_object("ui_window")
+    def h_app_show(self, *_):
+        """ We should show the main application window
+        """
+        if self.window is None:
+            self.window=UiWindow(glade_file)
+            self.window.updateAll(self.data)
 
-        self.reqin=self.builder.get_object("lRequestsData")
-        self.reqInfoData=self.builder.get_object("lRequestsInfoData")
-        
-        self.reqdrop=self.builder.get_object("lRequestsDroppedData")
-        self.mbfailed=self.builder.get_object("lMBFailedData")
-        self.hits=self.builder.get_object("lHitsData")
-        self.misses=self.builder.get_object("lMissesData")
-        self.notfound=self.builder.get_object("lNotFoundData")
-        self.filtered=self.builder.get_object("lFilteredData")
-        self.retries_dropped=self.builder.get_object("lRetriesDroppedData")
+    def h_app_close(self, *_):
+        """ Seems that the application window was closed...
+        """
+        self.window=None
 
-        self.total_records=self.builder.get_object("lTotalRecordsData")
-        self.records_mbid=self.builder.get_object("lRecordsWithMbidData")
-        self.job_queue=self.builder.get_object("lJobQueueData")
-        self.job_info_queue=self.builder.get_object("lJobInfoQueueData")
-        
-        self.window.connect("destroy-event", self.on_destroy)
-        self.window.connect("destroy",       self.on_destroy)
-        self.window.present()
-        
-        self.cRequestsIn = 0
-        self.cRequestsInfo = 0
-        self.cRequestsDropped = 0
-        self.cHits = 0
-        self.cMisses = 0
-        self.cFailed = 0
-        self.cNotFound = 0
-        self.cRetriesDropped = 0
-        self.cFiltered=0
-        
-    def on_destroy(self, *_):
-        mswitch.publish("__ui__", "__quit__")
-        gtk.main_quit()
 
     def h_filtered(self, *_):
-        self.cFiltered += 1
-        self.filtered.set_text(str(self.cFiltered))
+        self._iu("lFilteredData")  
         
     def h_job_queues(self, todo, info):
-        self.job_queue.set_text(str(todo))
-        self.job_info_queue.set_text(str(info))
+        self.data["lJobQueueData"]=todo
+        self.data["lJobInfoQueueData"]=info
+        
+        try:    
+            self.window.update("lJobQueueData", todo)
+            self.window.update("lJobInfoQueueData", info)
+        except: pass
 
     def h_cache_stats(self, ctotal_records, ctotal_records_mbid):
-        self.total_records.set_text(str(ctotal_records))
-        self.records_mbid.set_text(str(ctotal_records_mbid))
+        self.data["lTotalRecordsData"]=ctotal_records
+        self.data["lRecordsWithMbidData"]=ctotal_records_mbid
+
+        try:    
+            self.window.update("lTotalRecordsData", ctotal_records)
+            self.window.update("lRecordsWithMbidData", ctotal_records_mbid)
+        except: pass
+        
 
     def hq_track(self, ref, _artist, _track, priority):
-        """
-        For computing the 'requests in' counter
-        """
         if priority=="low":
-            self.cRequestsInfo += 1
-            self.reqInfoData.set_text(str(self.cRequestsInfo))
+            self._iu("lRequestsInfoData") 
         else:
-            self.cRequestsIn += 1
-            self.reqin.set_text(str(self.cRequestsIn))
-
+            self._iu("lRequestsData")            
+        
     def h_mb_queue_full(self, *_):
-        """
-        For computing the 'requests dropped' counter
-        """
-        self.cRequestsDropped += 1
-        self.reqdrop.set_text(str(self.cRequestsDropped)) 
+        self._iu("lRequestsDroppedData")        
 
     def h_mb_retry_dropped(self, *_):
-        self.cRetriesDropped += 1
-        self.retries_dropped.set_text(str(self.cRetriesDropped))
+        self._iu("lRetriesDroppedData")
+
+    def _iu(self, param):
+        d=self.data.get(param, 0)+1
+        self.data[param]=d
+        self._u(param, d)
+
+    def _u(self, param, d):
+        try:    self.window.update(param, d)
+        except: pass
 
     def h_tracks(self, source, _ref, tracks):
         """
@@ -130,30 +163,29 @@ class UiWindow(gobject.GObject): #@UndefinedVariable
         
         if source=="mb":
             if track is None or track_mbid is None or track_mbid=="":
-                self.cNotFound += 1
-                self.notfound.set_text(str(self.cNotFound))
+                self._iu("lNotFoundData")
                 return
         
         #print "ui.h_track: ", source, _ref, track
         if source == "cache":
             if track_mbid!="" and track_mbid is not None:
-                self.cHits += 1
-                self.hits.set_text(str(self.cHits))
+                self._iu("lHitsData")                
             else:
-                self.cMisses += 1
-                self.misses.set_text(str(self.cMisses))
+                self._iu("lMissesData")   
+
                 
     def h_cache_miss(self, *_):
-        self.cMisses += 1
-        self.misses.set_text(str(self.cMisses))
+        self._iu("lMissesData")
         
     def h_mb_error(self, *_):
-        """
-        For computing 'failed' counter
-        """
-        self.cFailed += 1
-        self.mbfailed.set_text(str(self.cFailed))
+        self._iu("lMBFailedData")
+    
+    def h_app_exit(self, *_):
+        self.on_destroy()
 
+    def on_destroy(self):
+        gtk.main_quit()
+    
     def tick(self, *_):
         """
         Performs message dispatch
@@ -172,6 +204,9 @@ class UiWindow(gobject.GObject): #@UndefinedVariable
                 quit, mtype, handled=mdispatch(self, "__main__", envelope)
                 if handled==False:
                     mswitch.publish(self.__class__, "__interest__", (mtype, False, self.isq))
+                if quit:
+                    self.on_destroy()
+                    
             except Empty:
                 break
             continue            
@@ -184,6 +219,8 @@ class UiWindow(gobject.GObject): #@UndefinedVariable
                 quit, mtype, handled=mdispatch(self, "__main__", envelope)
                 if handled==False:
                     mswitch.publish(self.__class__, "__interest__", (mtype, False, self.iq))
+                if quit:
+                    self.on_destroy()
                     
                 burst -= 1
                 if burst == 0:
@@ -194,10 +231,9 @@ class UiWindow(gobject.GObject): #@UndefinedVariable
             continue
 
         return True
-
-
+    
         
-ui=UiWindow(glade_file)
+ui=UiAgent(glade_file)
 gobject.timeout_add(TIME_BASE, ui.tick)
 
 
