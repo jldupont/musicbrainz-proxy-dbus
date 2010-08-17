@@ -37,7 +37,7 @@ class AppIcon(object):
     
     def getIconPixBuf(self): 
         try:
-            ipath=self.ICON_PATH+"/"+self.icon_path
+            ipath=self.icon_path+"/"+self.icon_file
             pixbuf = gtk.gdk.pixbuf_new_from_file( ipath )
         except:
             ipath=os.path.join(self.twodirup, self.icon_file)

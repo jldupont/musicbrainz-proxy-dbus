@@ -4,6 +4,7 @@
 #
 PRJ=musicbrainz_proxy_dbus
 VERSION:=`cat VERSION`
+DATE=`date +'%a, %d %B %Y %T %z'`
 
 DEFAULT_DISTRO=karmic
 
@@ -39,7 +40,7 @@ orig:
 	@cp VERSION "/tmp/$(PRJ)/VERSION"
 		
 	@echo "Adjusting debian/changelog to DIST & VERSION"
-	@cat packages/debian/changelog | sed "s/_DIST_/${DIST}/g" | sed "s/_VERSION_/${VERSION}/g" > "/tmp/${PRJ}/${PRJ}-${VERSION}/debian/changelog"
+	@cat packages/debian/changelog | sed "s/_DIST_/${DIST}/g" | sed "s/_VERSION_/${VERSION}/g" | sed "s/_DATE_/${DATE}/g" > "/tmp/${PRJ}/${PRJ}-${VERSION}/debian/changelog"
 	
 	@echo "** SUCCESS: folder ready: /tmp/$(PRJ)"
 	@echo "*** DON'T FORGET TO UPDATE debian/changelog ***"
