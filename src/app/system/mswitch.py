@@ -104,8 +104,8 @@ class BasicSwitch(Thread):
         """
         Add a 'subscriber' for 'mtype'
         """
-        _orig, msg, _pargs, _kargs = payload
-        mtype, interest, q = msg
+        _orig, pargs, _kargs = payload
+        mtype, interest, q = pargs[0]
         self.imap[(q, mtype)]=interest
                
                 
@@ -148,15 +148,15 @@ class BasicSwitch(Thread):
 ## =============================================================== 
         
 
-def publish(orig, msgType, msg=None, *pargs, **kargs):
+def publish(orig, msgType, *pargs, **kargs):
     """
     Publish a 'message' of type 'msgType' to
     all registered 'clients'
     """
     if msgType.startswith("__"):
-        _switch.isq.put((msgType, (orig, msg, pargs, kargs)), block=False)
+        _switch.isq.put((msgType, (orig, pargs, kargs)), block=False)
     else:
-        _switch.iq.put((msgType, (orig, msg, pargs, kargs)), block=False)
+        _switch.iq.put((msgType, (orig, pargs, kargs)), block=False)
     
     
 def subscribe(q, sq, _msgType=None):

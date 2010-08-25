@@ -50,6 +50,7 @@ _ca.start()
 
 from app.agents import adbus
 from app.agents import mb
+from app.agents import heart
 
 from app.agents.ui import UiAgent
 ui=UiAgent(HELP_URL, TICKS_SECOND)

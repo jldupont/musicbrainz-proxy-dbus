@@ -97,6 +97,8 @@ class MBAgent(AgentThreadedBase):
         if track is None:
             return
         
+        ### DO the actual querying to Musicbrainz Web Service
+        ###  Return something whatever happens
         btrack=self._queryTrack(track)
         self.pub("tracks", "mb", ref, [btrack])
         

@@ -184,6 +184,13 @@ class CacheAgent(AgentThreadedBase):
                 except Exception,e:
                     self.pub("log", "error", "Exception whilst Accessing database: %s" % e)                   
         
+    def hq_random_track_missing_mbid(self):
+        """
+        Request for a random track without an MBid field
+        """
+        track=self._getTrackWithoutMbidRandom()
+        self.pub("random_track_missing_mbid", track)
+        
         
     ## ========================================================= PRIVATE
     def _updateOrInsert(self, track):
@@ -230,6 +237,20 @@ class CacheAgent(AgentThreadedBase):
         except:
             track_tuple=None
 
+        track=makeTrackDict(track_tuple)
+        return track
+
+    def _getTrackWithoutMbidRandom(self):
+        """
+        Retrieves, at random, an entry without an Mbid field
+        """
+        try:
+            self.c.execute("""SELECT * FROM tracks WHERE track_mbid='' 
+                                ORDER BY RANDOM() LIMIT 1""", ())
+            track_tuple=self.c.fetchone()
+        except:
+            track_tuple=None
+            
         track=makeTrackDict(track_tuple)
         return track
 

@@ -87,6 +87,20 @@ class DbusAgent(AgentThreadedBase):
                 result.append(self._format(track))
             
         self.srx.Tracks(source, ref, result)
+
+    def h_tracksv2(self, source, ref, tracks):
+        """
+        Handler for the 'tracks' message
+        
+        Sends back a message on DBus
+        """
+        if source=="info":
+            return
+        
+        if tracks is None:
+            return
+
+        self.srx.Tracks(source, ref, tracks)
             
         
     def _format(self, track):

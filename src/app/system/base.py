@@ -27,7 +27,7 @@ def mdispatch(obj, obj_orig, envelope):
     handler inside a class instance
     """
     mtype, payload = envelope
-    orig, msg, pargs, kargs = payload
+    orig, pargs, kargs = payload
     
     ## Avoid sending to self
     if orig == obj_orig:
@@ -47,10 +47,10 @@ def mdispatch(obj, obj_orig, envelope):
     if handler is None:
         handler=getattr(obj, "h_default", None)    
         if handler is not None:
-            handler(mtype, msg, *pargs, **kargs)
+            handler(mtype, *pargs, **kargs)
             handled=True
     else:
-        handler(msg, *pargs, **kargs)
+        handler(*pargs, **kargs)
         handled=True
 
     if handler is None:
@@ -76,8 +76,8 @@ class AgentThreadedBase(Thread):
         self.iq = Queue()
         self.isq= Queue()
         
-    def pub(self, msgType, msg, *pargs, **kargs):
-        mswitch.publish(self.id, msgType, msg, *pargs, **kargs)
+    def pub(self, msgType, *pargs, **kargs):
+        mswitch.publish(self.id, msgType, *pargs, **kargs)
         
     def run(self):
         """

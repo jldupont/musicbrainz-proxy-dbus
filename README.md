@@ -81,5 +81,6 @@ History
  - v2.11: minor fix in AgentThreadedBase
  - v2.20: added 'help' button and tray icon
  - v2.22: bumped priority of "show" system event
+ - v2.30: added "heart beat" functionality: regular "tracks" message with a random cache entry missing an "mbid" value
 
 [Home](http://www.systemical.com/ "Home")
