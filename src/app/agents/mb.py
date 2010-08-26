@@ -114,6 +114,11 @@ class MBAgent(AgentThreadedBase):
         """
         #print "mb.h_track, source, ref, track", _source, ref, track
         
+        ## v2.31
+        ## send a response signal anyways
+        #print "cache_miss: ref:%s, track:%s" % (ref, track)
+        self.pub("tracks", "mb", ref, [track])
+                
         ## Let's see if we can retry fetching a possible
         ##  entry from Musicbrainz
         updated=track.get("updated", 0)
@@ -126,7 +131,7 @@ class MBAgent(AgentThreadedBase):
             #artist_name=track.get("artist_name", "")
             #track_name=track.get("track_name", "")
             ##self.pub("log", "Will retry later: artist(%s) track(%s)" % (artist_name, track_name))
-            self.pub("mb_retry_dropped", ref, track)
+            self.pub("mb_retry_dropped", ref, track)           
             return
             
         #ctrack=copy.deepcopy(track)
