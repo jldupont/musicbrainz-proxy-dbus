@@ -83,5 +83,6 @@ History
  - v2.22: bumped priority of "show" system event
  - v2.30: added "heart beat" functionality: regular "tracks" message with a random cache entry missing an "mbid" value
  - v2.31: send response signal (with track_mbid="") when no entry found in cache
+ - v2.32: fixed issue when "track_mbid"
 
 [Home](http://www.systemical.com/ "Home")

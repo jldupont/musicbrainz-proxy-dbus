@@ -149,6 +149,17 @@ class CacheAgent(AgentThreadedBase):
 
         track=tracks[0]
 
+        if track is None:
+            self.pub("warning", "Received null track object")
+            return
+
+        if track.get("track_mbid") is None:
+            track["track_mbid"]=""
+
+        if track.get("artist_mbid") is None:
+            track["artist_mbid"]=""
+
+
         ## Update the cache regardless of the 'track' object we get:
         ##  if the entry wasn't found on Musicbrainz, we'll have at least
         ##  a trace of the attempt (i.e. 'updated' field) and thus we can
@@ -156,7 +167,8 @@ class CacheAgent(AgentThreadedBase):
         try:      
             new=self._updateOrInsert(track)
         except Exception,e:
-            self.pub("log", "error", "Exception whilst Accessing database: %s" % e)
+            self.pub("log", "error", "* Exception whilst accessing database: %s" % e)
+            #print track
             return
         
         if new:
@@ -182,7 +194,7 @@ class CacheAgent(AgentThreadedBase):
                 try:
                     self._updateOrInsert(mb_track)
                 except Exception,e:
-                    self.pub("log", "error", "Exception whilst Accessing database: %s" % e)                   
+                    self.pub("log", "error", "Exception whilst accessing database: %s" % e)                   
         
     def hq_random_track_missing_mbid(self):
         """

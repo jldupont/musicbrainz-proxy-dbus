@@ -101,6 +101,7 @@ class MBAgent(AgentThreadedBase):
         ###  Return something whatever happens
         btrack=self._queryTrack(track)
         self.pub("tracks", "mb", ref, [btrack])
+        #print btrack
         
     def _doRefresh(self):
         self.pub("job_queues", self.qtodo.qsize(), self.qinfo.qsize())
@@ -118,6 +119,7 @@ class MBAgent(AgentThreadedBase):
         ## send a response signal anyways
         #print "cache_miss: ref:%s, track:%s" % (ref, track)
         self.pub("tracks", "mb", ref, [track])
+        #print ">> Missed: %s" % track
                 
         ## Let's see if we can retry fetching a possible
         ##  entry from Musicbrainz
